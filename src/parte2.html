@@ -1,0 +1,158 @@
+
+<!-- ================= MÓDULO 2 ================= -->
+
+<section id="s5" data-tema="hc">
+<h2>5. Hill Climbing</h2>
+<h3>5.1 Clasificación y características</h3>
+<div class="grid">
+<div class="card"><h4>Secuencial</h4>Considera una sola solución en cada paso.</div>
+<div class="card"><h4>Greedy</h4>Solo acepta una solución si es mejor que la actual.</div>
+<div class="card"><h4>No evolutivo</h4>Metáfora de una <b>persona caminando</b> que siempre sube.</div>
+</div>
+<ul>
+<li>Pertenece a la familia de los <b>algoritmos de búsqueda local</b>.</li>
+<li><b>No garantiza</b> encontrar el óptimo global.</li>
+<li>Encuentra <b>solo el óptimo local más cercano al punto inicial</b>.</li></ul>
+
+<h3>5.2 El algoritmo</h3>
+<ol>
+<li>Tomar una solución inicial <b>X₀</b> y un tamaño máximo del paso <b>ε<sub>max</sub></b>.</li>
+<li>Crear al azar un <b>vector de avance</b> R = (r₁, r₂, …, rₙ).</li>
+<li>Generar al azar un paso ε &lt; ε<sub>max</sub> (ε = rand() · ε<sub>max</sub>).</li>
+<li>Calcular la nueva solución: <b>X = X₀ + ε·R</b>.</li>
+<li>Evaluar y comparar F(X) con F(X₀).</li>
+<li>Si F(X) &gt; F(X₀), entonces <b>X₀ = X</b> (se busca un máximo de F).</li>
+<li>Volver a 2.</li></ol>
+<figure class="diag"><svg viewBox="0 0 640 330" role="img" aria-label="Esquema de Hill Climbing">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arr"/></marker></defs>
+<rect class="n1" x="170" y="8" width="300" height="34" rx="8"/><text x="320" y="30" text-anchor="middle" class="tb">X₀ , ε<tspan font-size="10" dy="3">max</tspan><tspan dy="-3">, t = 0</tspan></text>
+<rect class="n0" x="170" y="62" width="300" height="34" rx="8"/><text x="320" y="84" text-anchor="middle">R = (r₁ … rₙ) al azar · ε = rand()·εmax</text>
+<rect class="n0" x="170" y="116" width="300" height="34" rx="8"/><text x="320" y="138" text-anchor="middle" class="tb">X = X₀ + ε·R &nbsp;→ evaluar F(X)</text>
+<polygon class="n3" points="320,170 430,205 320,240 210,205"/><text x="320" y="210" text-anchor="middle" class="tb">¿F(X) &gt; F(X₀)?</text>
+<rect class="n2" x="470" y="188" width="140" height="34" rx="8"/><text x="540" y="210" text-anchor="middle" class="tg">X₀ = X</text>
+<rect class="n0" x="245" y="270" width="150" height="34" rx="8"/><text x="320" y="292" text-anchor="middle">t = t + 1</text>
+<path class="ln" d="M320 42V60M320 96V114M320 150V168" marker-end="url(#ah)"/>
+<path class="ln" d="M430 205H468" marker-end="url(#ah)"/><text x="447" y="198" class="tg" text-anchor="middle">Sí</text>
+<path class="ln" d="M320 240V268" marker-end="url(#ah)"/><text x="306" y="258" class="tw" text-anchor="end">No</text>
+<path class="ln" d="M540 222V287H397" marker-end="url(#ah)"/>
+<path class="ln" d="M245 287H120V79H168" marker-end="url(#ah)"/><text x="112" y="180" class="ts" text-anchor="end">repetir</text>
+</svg><figcaption>Hill Climbing: un paso al azar alrededor de X₀; si mejora, me muevo; si no, me quedo y pruebo otra dirección. Nunca acepta empeorar.</figcaption></figure>
+<div class="box warn"><b>Errata en la diapositiva del algoritmo</b>
+El paso 6 dice "Si F(X) &gt; F(X₀) entonces X = X₀". Es al revés: si la nueva solución es mejor, <b>la actual pasa a ser la nueva</b>, o sea <b>X₀ = X</b>. El esquema de la diapositiva siguiente sí lo muestra bien.</div>
+
+<h3>5.3 El vector dirección R</h3>
+<p>En la clase de ajuste se comparan tres formas de generar R (en 2 dimensiones):</p>
+<table><tr><th>Variante</th><th>Cómo se genera</th><th>Efecto</th></tr>
+<tr><td>1</td><td>rᵢ = rand()</td><td>Componentes en [0, 1): <b>solo avanza en direcciones positivas</b>, nunca puede ir hacia atrás</td></tr>
+<tr><td>2</td><td>rᵢ = 2·rand() − 1</td><td>Componentes en [−1, 1): explora <b>todas las direcciones</b>, pero los pasos en diagonal son más largos que los paralelos a los ejes (el vector cae en un cuadrado)</td></tr>
+<tr><td>3</td><td>rᵢ = 2·rand() − 1 y luego <b>R = R / ‖R‖</b></td><td>Vector <b>unitario</b>: todas las direcciones con la misma longitud. El tamaño del paso lo decide solo ε</td></tr></table>
+<div class="f">‖R‖ = √(r₁² + r₂² + … + rₙ²)<small>Norma del vector. Dividir por ella normaliza R (longitud 1).</small></div>
+
+<h3>5.4 Tamaño máximo del paso ε<sub>max</sub></h3>
+<table><tr><th></th><th>Muy pequeño (ej.: 0,01)</th><th>Demasiado grande (ej.: 1,0)</th><th>Equilibrado (ej.: 0,1)</th></tr>
+<tr><td>Ventaja</td><td>Los cambios pequeños mejoran continuamente la precisión</td><td>Avance más rápido hacia la zona del óptimo y mejor exploración</td><td rowspan="3"><b>Preciso y rápido</b></td></tr>
+<tr><td>Desventaja</td><td>Avance lento hacia el óptimo; solo llega al más cercano</td><td>Cerca del óptimo necesita muchos intentos para mejorar</td></tr>
+<tr><td>En resumen</td><td><b>Preciso pero lento</b></td><td><b>Rápido pero impreciso</b></td></tr></table>
+<p>En <b>los dos extremos</b> se necesitan más iteraciones (más evaluaciones de la función): el algoritmo se vuelve lento e ineficiente.</p>
+
+<h3>5.5 Condición de terminación</h3>
+<table><tr><th>Criterio</th><th>Problema</th></tr>
+<tr><td>Alcanzar un valor de evaluación deseado</td><td>No siempre se conoce el valor de f en el óptimo</td></tr>
+<tr><td>Cantidad fija de iteraciones</td><td>Depende fuertemente de la <b>dimensión</b> del problema</td></tr>
+<tr><td><b>Propuesta de la cátedra:</b> terminar tras <b>N iteraciones consecutivas sin mejorar</b></td><td>No depende de la dimensión del problema ✓</td></tr></table>
+
+<h3>5.6 Ejemplos de clase</h3>
+<p>Funciones de 2 y de N variables, y la <b>reconstrucción de una imagen con 150 círculos de colores</b> (cada solución es la posición, el radio y el color de los círculos; se acepta un cambio si la imagen se parece más a la original).</p>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué Hill Climbing se queda en óptimos locales?</summary><div>Porque es greedy: solo acepta mejoras. Al llegar a la cima de una colina, todo paso pequeño empeora y no hay forma de bajar para cruzar a otra.</div></details>
+<details><summary>¿Qué problema tiene generar R con rᵢ = rand()?</summary><div>Que todas las componentes son positivas: el algoritmo solo puede avanzar en un cuadrante y nunca retroceder.</div></details>
+<details><summary>¿Qué condición de terminación propone la cátedra y por qué?</summary><div>N iteraciones consecutivas sin mejora, porque no depende de la dimensión del problema ni de conocer el valor del óptimo.</div></details>
+</div>
+</section>
+
+<section id="s6" data-tema="sa">
+<h2>6. Simulated Annealing (recocido simulado)</h2>
+<h3>6.1 La metáfora</h3>
+<p>Imita el <b>recocido del acero y las cerámicas</b>: el material se calienta y luego se <b>enfría lentamente</b> para obtener una estructura cristalina de <b>menor energía</b> (el óptimo global).</p>
+<ul><li>El <b>calor</b> hace que los átomos aumenten su energía y puedan desplazarse.</li>
+<li>El <b>enfriamiento lento</b> recristaliza el material en configuraciones de menor energía.</li>
+<li>Una temperatura inicial muy alta o un <b>enfriamiento muy rápido</b> dejan imperfecciones en la estructura → <b>óptimos locales</b>.</li></ul>
+
+<h3>6.2 Clasificación y características</h3>
+<div class="grid">
+<div class="card"><h4>Secuencial</h4>Una sola solución por paso (encuentra una sola solución).</div>
+<div class="card"><h4>No greedy</h4>Acepta soluciones de <b>menor calidad</b> que la actual, con cierta probabilidad.</div>
+<div class="card"><h4>No evolutivo</h4>Metáfora del recocido de metales.</div>
+</div>
+<ul><li><b>Sensible</b> al parámetro de enfriamiento y a la función de enfriamiento usada.</li>
+<li><b>Sumamente rápido una vez ajustado</b>, si no se cambia "demasiado" el problema.</li></ul>
+
+<h3>6.3 Algoritmo básico</h3>
+<p>Es Hill Climbing con un paso más: si la nueva solución es peor, <b>igual se puede aceptar</b>.</p>
+<ol><li>Tomar X₀ y ε<sub>max</sub>.</li><li>Crear R al azar.</li><li>Generar ε &lt; ε<sub>max</sub>.</li><li>X = X₀ + ε·R.</li><li>Evaluar y comparar F(X) con F(X₀).</li>
+<li>Si F(X) &gt; F(X₀) → X₀ = X.</li>
+<li><b>Si no</b>, se acepta igual con una probabilidad que depende del <b>tiempo t</b> y de la <b>temperatura inicial T₀</b>: se tira s = rand() y se acepta si <b>P(T₀, t) ≥ s</b>.</li>
+<li>Volver a 2.</li></ol>
+
+<h3>6.4 Función de enfriamiento</h3>
+<div class="f">T = T₀ · e<sup>−μ·t</sup><small>T₀ = temperatura inicial · μ = parámetro de enfriamiento · t = iteración</small></div>
+<figure class="diag">{{SVG_ENF}}<figcaption>Con μ grande la temperatura cae enseguida (se "congela" pronto y se comporta como Hill Climbing); con μ chico baja despacio y explora más tiempo.</figcaption></figure>
+
+<h3>6.5 Algoritmo completo</h3>
+<p>En la versión completa la probabilidad de aceptar una peor depende de la <b>temperatura T</b> y de <b>cuánto peor</b> es la nueva solución:</p>
+<div class="f">ΔF = F(X₀) − F(X) &nbsp;&nbsp;&nbsp; P = e<sup>−ΔF / T</sup> &nbsp;&nbsp;&nbsp; se acepta X si s &lt; P, con s = rand()<small>Maximización: si X es peor, ΔF &gt; 0 y entonces 0 &lt; P &lt; 1.</small></div>
+<figure class="diag"><svg viewBox="0 0 640 360" role="img" aria-label="Esquema de Simulated Annealing">
+<defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arr"/></marker></defs>
+<rect class="n1" x="150" y="8" width="340" height="34" rx="8"/><text x="320" y="30" text-anchor="middle" class="tb">X₀, εmax, μ, T₀, t = 0</text>
+<rect class="n0" x="150" y="60" width="340" height="34" rx="8"/><text x="320" y="82" text-anchor="middle">R al azar · ε = rand()·εmax · X = X₀ + ε·R</text>
+<polygon class="n3" points="320,112 420,146 320,180 220,146"/><text x="320" y="151" text-anchor="middle" class="tb">¿F(X) &gt; F(X₀)?</text>
+<rect class="n2" x="470" y="129" width="140" height="34" rx="8"/><text x="540" y="151" text-anchor="middle" class="tg">X₀ = X</text>
+<rect class="n0" x="150" y="198" width="340" height="34" rx="8"/><text x="320" y="220" text-anchor="middle">T = T₀·e^(−μt) · ΔF = F(X₀) − F(X) · P = e^(−ΔF/T)</text>
+<polygon class="n3" points="320,250 420,284 320,318 220,284"/><text x="320" y="289" text-anchor="middle" class="tb">s = rand() ; ¿s &lt; P?</text>
+<rect class="n0" x="40" y="320" width="120" height="32" rx="8"/><text x="100" y="341" text-anchor="middle">t = t + 1</text>
+<path class="ln" d="M320 42V58M320 94V110" marker-end="url(#ah2)"/>
+<path class="ln" d="M420 146H468" marker-end="url(#ah2)"/><text x="444" y="139" class="tg" text-anchor="middle">Sí</text>
+<path class="ln" d="M320 180V196M320 232V248" marker-end="url(#ah2)"/><text x="306" y="192" class="tw" text-anchor="end">No</text>
+<path class="ln" d="M420 284H540V165" marker-end="url(#ah2)"/><text x="470" y="277" class="tg" text-anchor="middle">Sí: acepto la peor</text>
+<path class="ln" d="M220 284H100V318" marker-end="url(#ah2)"/><text x="160" y="277" class="tw" text-anchor="middle">No</text>
+<path class="ln" d="M610 146H625V345H162" marker-end="url(#ah2)"/>
+<path class="ln" d="M40 336H20V77H148" marker-end="url(#ah2)"/>
+</svg><figcaption>La única diferencia con Hill Climbing es la rama "No": en vez de descartar siempre la solución peor, se la acepta con probabilidad P.</figcaption></figure>
+
+<h4>Cómo se comporta P = e<sup>−ΔF/T</sup></h4>
+<table><tr><th>Si…</th><th>P</th><th>Interpretación</th></tr>
+<tr><td>La temperatura T es <b>alta</b> (al principio)</td><td>Cerca de 1</td><td>Acepta casi cualquier empeoramiento: <b>explora</b></td></tr>
+<tr><td>La temperatura T es <b>baja</b> (al final)</td><td>Cerca de 0</td><td>Casi no acepta empeorar: se comporta como <b>Hill Climbing</b></td></tr>
+<tr><td>La solución nueva es <b>apenas peor</b> (ΔF chico)</td><td>Alta</td><td>Empeorar un poco es fácil</td></tr>
+<tr><td>La solución nueva es <b>mucho peor</b> (ΔF grande)</td><td>Baja</td><td>Empeorar mucho es raro</td></tr></table>
+<p>Ejemplo: con ΔF = 0,5 y T = 1, P = e<sup>−0,5</sup> ≈ <b>0,61</b>; con la misma ΔF y T = 0,1, P = e<sup>−5</sup> ≈ <b>0,007</b>.</p>
+
+<div class="lab" id="labSA"><h4>🧪 Laboratorio: probabilidad de aceptar una solución peor</h4>
+<div class="row"><label for="saT0">T₀</label><input type="number" id="saT0" value="1" step="0.1" min="0.01" style="width:80px"><label for="saMu">μ</label><input type="number" id="saMu" value="0.01" step="0.001" min="0" style="width:90px"><label for="saDF">ΔF</label><input type="number" id="saDF" value="0.5" step="0.1" min="0" style="width:80px"></div>
+<div class="row"><label for="saT">Iteración t = <b id="saTv">0</b></label><input type="range" id="saT" min="0" max="1000" value="0"></div>
+<div class="row out" id="saOut"></div></div>
+
+<h3>6.6 Ejemplos de clase</h3>
+<ul><li><b>Rastrigin</b>: gracias a aceptar empeoramientos, puede salir de los óptimos locales de la grilla.</li>
+<li><b>Techo solar del Stevens Institute of Technology</b>: problema <b>multi objetivo</b> que minimiza a la vez la ineficiencia de los paneles (desviación de la normal de cada panel respecto del vector solar de cada hora), la superficie del techo (costo de construcción) y el volumen del edificio (costo de acondicionamiento).</li></ul>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué pasa si el enfriamiento es demasiado rápido?</summary><div>La temperatura cae enseguida, P se vuelve casi 0 y el algoritmo deja de aceptar empeoramientos antes de haber explorado: queda atrapado en un óptimo local (como las imperfecciones del metal enfriado de golpe).</div></details>
+<details><summary>En la versión básica, ¿de qué depende la probabilidad de aceptación? ¿Y en la completa?</summary><div>En la básica, del tiempo t y de la temperatura inicial T₀. En la completa, de la temperatura T y de ΔF (cuánto peor es la nueva solución).</div></details>
+<details><summary>Si ΔF crece, ¿P crece o disminuye?</summary><div>Disminuye: cuanto peor es la solución nueva, menos probable es aceptarla.</div></details>
+</div>
+</section>
+
+<section id="shs" data-tema="hc,sa">
+<h2>★ Hill Climbing vs Simulated Annealing</h2>
+<table><tr><th></th><th>Hill Climbing</th><th>Simulated Annealing</th></tr>
+<tr><td>Clasificación</td><td>Secuencial · <b>greedy</b> · no evolutivo</td><td>Secuencial · <b>no greedy</b> · no evolutivo</td></tr>
+<tr><td>Metáfora</td><td>Persona caminando</td><td>Recocido de metales</td></tr>
+<tr><td>Si la solución nueva es peor</td><td>La descarta siempre</td><td>La acepta con probabilidad P = e<sup>−ΔF/T</sup></td></tr>
+<tr><td>Óptimos locales</td><td>Se queda en el más cercano al punto inicial</td><td>Puede escapar de ellos mientras la temperatura sea alta</td></tr>
+<tr><td>Parámetros</td><td>X₀, ε<sub>max</sub>, condición de terminación</td><td>Además T₀ y μ (función de enfriamiento)</td></tr>
+<tr><td>Cuando T → 0</td><td>—</td><td>Se comporta como Hill Climbing</td></tr></table>
+<div class="box ok"><b>Para recordar</b>
+Simulated Annealing = Hill Climbing + aceptar empeoramientos con una probabilidad que baja con el tiempo. Los dos encuentran <b>una sola</b> solución (son secuenciales).</div>
+</section>

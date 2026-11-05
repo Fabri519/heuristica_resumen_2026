@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica · Heurística y Optimización</title>
+<meta name="description" content="Preguntas de verdadero o falso y multiple choice por tema: heurísticas, Hill Climbing, Simulated Annealing y Algoritmos Genéticos.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5fbf'/%3E%3Cpath d='M10 46 L24 28 L34 38 L46 16 L54 26' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/estilo.css">
+<script src="assets/comun.js"></script>
+<style>
+.wrap.solo{display:block;max-width:900px}
+.topnav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:4px 0 10px;padding-right:60px}
+.topnav a{font-weight:600}
+.timer.low{color:var(--bad);font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap solo">
+<main>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Cambiar modo claro u oscuro" title="Cambiar modo claro / oscuro"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+<div class="topnav"><a href="index.html">← Volver a la guía</a></div>
+<h1>Práctica: verdadero o falso y multiple choice</h1>
+<p class="sub">Elegí las unidades y los temas, el tipo de pregunta y cómo querés que se corrija.</p>
+
+<div id="cfg" class="qcfg">
+<h3>1. Unidades y temas</h3>
+<div class="cfgrow"><button class="btn" type="button" id="selTodo">Marcar todo</button><button class="btn" type="button" id="selNada">Desmarcar todo</button><span id="cntSel"></span></div>
+<div class="temas" id="temas"></div>
+<h3>2. Tipo de pregunta</h3>
+<div class="seg" id="segTipo"><button type="button" data-v="ambas" class="on">V/F y multiple choice</button><button type="button" data-v="vf">Solo V/F</button><button type="button" data-v="mc">Solo multiple choice</button></div>
+<h3>3. Cantidad</h3>
+<div class="seg" id="segCant"><button type="button" data-v="10">10</button><button type="button" data-v="20" class="on">20</button><button type="button" data-v="40">40</button><button type="button" data-v="0">Todas</button></div>
+<h3>4. Modo</h3>
+<div class="seg" id="segModo"><button type="button" data-v="practica" class="on">Práctica: corrige al instante</button><button type="button" data-v="examen">Examen: corrige al final</button></div>
+<div class="cfgrow hidden" id="rowTiempo"><span>Tiempo límite</span><div class="seg" id="segTiempo"><button type="button" data-v="0" class="on">Sin límite</button><button type="button" data-v="15">15 min</button><button type="button" data-v="30">30 min</button><button type="button" data-v="60">60 min</button></div></div>
+<div class="cfgrow"><label style="font-size:14px"><input type="checkbox" id="negativo"> Puntaje con descuento: cada error resta medio punto</label></div>
+<div class="cfgrow"><button class="btn p" type="button" id="empezar">Empezar</button><span id="aviso" class="sub"></span></div>
+</div>
+
+<div id="juego" class="hidden">
+<div class="stats" id="stats"><span>Contestadas <b id="stC">0</b>/<b id="stT">0</b></span><span class="okc" id="wOk">Correctas <b id="stOk">0</b></span><span class="bdc" id="wBad">Incorrectas <b id="stBad">0</b></span><span>⏱ <b id="stTime" class="timer">0:00</b></span><button class="btn" type="button" id="terminar">Terminar y ver nota</button></div>
+<div id="lista"></div>
+<div class="cfgrow"><button class="btn p" type="button" id="terminar2">Terminar y ver nota</button><button class="btn" type="button" id="volverCfg">Cambiar temas</button></div>
+</div>
+
+<div id="resultado" class="hidden"></div>
+</main>
+</div>
+<script src="assets/preguntas.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var LS = window.LSH;
+  var SECC = { s1:'1. ¿Qué es una heurística?', s2:'2. El problema de optimización', s3:'3. Clasificación', s4:'4. Aplicaciones del GITIA', s5:'5. Hill Climbing', s6:'6. Simulated Annealing',
+    s7:'7. AG: generalidades', s8:'8. Selección', 's8-med':'8.2 Bias, spread, presión y diversidad', 's8-rul':'8.3 Ruleta', 's8-tor':'8.4 Torneo', 's8-sus':'8.5 SUS', 's8-rank':'8.6 Ranking',
+    s9:'9. Cruzamiento', 's9-1p':'9.2 Single Point', 's9-shuf':'9.3 Shuffle', 's9-mp':'9.4 Two/Multi-Point', 's9-uni':'9.5 Uniform', 's9-ari':'9.6 Aritmético', 's9-cube':'9.7 Cube', 's9-pmx':'9.8 PMX', 's9-ox':'9.9 Order Based', s10:'10. Mutación', s11:'11. Ejemplo completo' };
+  var TEMA = {}; MODULOS.forEach(function(m){ m.temas.forEach(function(t){ TEMA[t.id] = t.n; }); });
+  var cuenta = {}; PREGUNTAS.forEach(function(p){ cuenta[p.t] = (cuenta[p.t] || 0) + 1; });
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
+  var mezclar = function(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+
+  /* ---------- configuración ---------- */
+  var h = '';
+  MODULOS.forEach(function(m){
+    h += '<div class="tmod" data-m="' + m.id + '"><label><input type="checkbox" class="mchk"> ' + esc(m.n) + '</label><div class="tl">';
+    m.temas.forEach(function(t){ h += '<label><input type="checkbox" class="tchk" value="' + t.id + '"> ' + esc(t.n) + ' <small>' + (cuenta[t.id] || 0) + '</small></label>'; });
+    h += '</div></div>';
+  });
+  $('temas').innerHTML = h;
+  var tchk = function(){ return Array.prototype.slice.call(document.querySelectorAll('.tchk')); };
+  var sincroModulos = function(){
+    document.querySelectorAll('.tmod').forEach(function(box){
+      var cs = box.querySelectorAll('.tchk'), n = 0; cs.forEach(function(c){ if (c.checked) n++; });
+      var mc = box.querySelector('.mchk'); mc.checked = n === cs.length; mc.indeterminate = n > 0 && n < cs.length;
+    });
+    var tot = 0; tchk().forEach(function(c){ if (c.checked) tot += cuenta[c.value] || 0; });
+    $('cntSel').textContent = tot + ' preguntas disponibles en los temas elegidos';
+  };
+  document.querySelectorAll('.mchk').forEach(function(mc){ mc.addEventListener('change', function(){ mc.closest('.tmod').querySelectorAll('.tchk').forEach(function(c){ c.checked = mc.checked; }); sincroModulos(); }); });
+  tchk().forEach(function(c){ c.addEventListener('change', sincroModulos); });
+  $('selTodo').onclick = function(){ tchk().forEach(function(c){ c.checked = true; }); sincroModulos(); };
+  $('selNada').onclick = function(){ tchk().forEach(function(c){ c.checked = false; }); sincroModulos(); };
+  var segVal = {};
+  ['segTipo', 'segCant', 'segModo', 'segTiempo'].forEach(function(id){
+    var seg = $(id);
+    segVal[id] = seg.querySelector('.on').getAttribute('data-v');
+    seg.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){ setSeg(id, b.getAttribute('data-v')); });
+    });
+  });
+  function setSeg(id, v){
+    var seg = $(id), ok = false;
+    seg.querySelectorAll('button').forEach(function(b){ var on = b.getAttribute('data-v') === String(v); b.classList.toggle('on', on); if (on) ok = true; });
+    if (ok) segVal[id] = String(v);
+    if (id === 'segModo') $('rowTiempo').classList.toggle('hidden', segVal.segModo !== 'examen');
+  }
+
+  /* temas desde la URL o la última vez */
+  var qs = new URLSearchParams(location.search), param = qs.get('t'), guardado = null;
+  try { guardado = JSON.parse(LS.get('heur-practica') || 'null'); } catch(e){}
+  var marcar = function(lista){ tchk().forEach(function(c){ c.checked = lista.indexOf(c.value) >= 0; }); };
+  if (param) {
+    var pedidos = param.split(','), ids = [];
+    tchk().forEach(function(c){ pedidos.forEach(function(p){ if (p === 'todo' || c.value === p || c.value.indexOf(p + '-') === 0) ids.push(c.value); }); });
+    marcar(ids);
+  } else if (guardado && guardado.temas) {
+    marcar(guardado.temas);
+    ['segTipo', 'segCant', 'segModo', 'segTiempo'].forEach(function(id){ if (guardado[id] !== undefined) setSeg(id, guardado[id]); });
+    $('negativo').checked = !!guardado.neg;
+  } else marcar(Object.keys(TEMA));
+  if (qs.get('modo') === 'examen') setSeg('segModo', 'examen');
+  sincroModulos();
+
+  /* ---------- juego ---------- */
+  var actual = [], respuestas = [], modo = 'practica', t0 = 0, limite = 0, reloj = null, terminado = false, neg = false;
+  var fmtT = function(s){ s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); };
+
+  function empezar(lista){
+    terminado = false;
+    actual = lista; respuestas = actual.map(function(){ return null; });
+    modo = segVal.segModo; limite = modo === 'examen' ? parseInt(segVal.segTiempo, 10) * 60 : 0; neg = $('negativo').checked;
+    $('cfg').classList.add('hidden'); $('resultado').classList.add('hidden'); $('juego').classList.remove('hidden');
+    $('wOk').classList.toggle('hidden', modo === 'examen'); $('wBad').classList.toggle('hidden', modo === 'examen');
+    var html = '';
+    actual.forEach(function(p, i){
+      html += '<div class="q" id="q' + i + '"><div class="qh"><span class="tag">' + (p.y === 'vf' ? 'V / F' : 'Multiple choice') + '</span><span class="tag verde">' + esc(TEMA[p.t] || p.t) + '</span><span>Pregunta ' + (i + 1) + ' de ' + actual.length + '</span></div>';
+      html += '<div class="qt">' + esc(p.q) + '</div><div class="opts' + (p.y === 'vf' ? ' vf' : '') + '">';
+      p._o.forEach(function(o, k){ html += '<button type="button" class="opt" data-i="' + i + '" data-k="' + k + '">' + (p.y === 'mc' ? String.fromCharCode(97 + k) + ') ' : '') + esc(o.txt) + '</button>'; });
+      html += '</div><div class="exp"></div></div>';
+    });
+    $('lista').innerHTML = html;
+    document.querySelectorAll('#lista .opt').forEach(function(b){ b.addEventListener('click', function(){ responder(+b.getAttribute('data-i'), +b.getAttribute('data-k')); }); });
+    t0 = Date.now(); clearInterval(reloj); reloj = setInterval(tic, 500); tic(); stats();
+    window.scrollTo({ top: 0 });
+  }
+  function tic(){
+    var s = (Date.now() - t0) / 1000;
+    if (limite) { var r = limite - s; $('stTime').textContent = fmtT(r) + ' restantes'; $('stTime').classList.toggle('low', r < 60); if (r <= 0) terminar(true); }
+    else $('stTime').textContent = fmtT(s);
+  }
+  function correcta(p){ for (var k = 0; k < p._o.length; k++) if (p._o[k].ok) return k; return -1; }
+  function mostrar(i){
+    var p = actual[i], box = $('q' + i), r = respuestas[i], c = correcta(p);
+    box.classList.add('done'); box.classList.toggle('right', r === c); box.classList.toggle('wrong', r !== c);
+    box.querySelectorAll('.opt').forEach(function(b){ var k = +b.getAttribute('data-k'); b.disabled = true; b.classList.remove('sel'); if (k === c) b.classList.add('ok'); else if (k === r) b.classList.add('bad'); });
+    var veredicto = r === null ? '<b>Sin responder.</b>' : (r === c ? '<b>✓ Correcto.</b>' : '<b>✗ Incorrecto.</b>');
+    var resp = p.y === 'vf' ? ' Es <b>' + (p.a ? 'verdadero' : 'falso') + '</b>.' : '';
+    box.querySelector('.exp').innerHTML = veredicto + resp + ' ' + (p.e === 'Correcto.' ? '' : esc(p.e)) + (p.s ? ' <a href="index.html#' + p.s + '">Repasar: ' + esc(SECC[p.s] || p.s) + ' →</a>' : '');
+  }
+  function responder(i, k){
+    if (terminado) return;
+    if (modo === 'practica') { if (respuestas[i] !== null) return; respuestas[i] = k; mostrar(i); }
+    else { respuestas[i] = k; $('q' + i).querySelectorAll('.opt').forEach(function(b){ b.classList.toggle('sel', +b.getAttribute('data-k') === k); }); }
+    stats();
+  }
+  function stats(){
+    var c = 0, ok = 0, bad = 0;
+    respuestas.forEach(function(r, i){ if (r === null) return; c++; if (r === correcta(actual[i])) ok++; else bad++; });
+    $('stC').textContent = c; $('stT').textContent = actual.length; $('stOk').textContent = ok; $('stBad').textContent = bad;
+  }
+  function terminar(porTiempo){
+    if (terminado) return;
+    var faltan = respuestas.filter(function(r){ return r === null; }).length;
+    if (!porTiempo && faltan && !confirm('Te quedan ' + faltan + ' sin responder. ¿Terminar igual?')) return;
+    terminado = true; clearInterval(reloj);
+    actual.forEach(function(_, i){ mostrar(i); });
+    var ok = 0, bad = 0, porTema = {}, repasar = {};
+    actual.forEach(function(p, i){
+      var r = respuestas[i], bien = r === correcta(p);
+      porTema[p.t] = porTema[p.t] || [0, 0]; porTema[p.t][1]++;
+      if (bien) { ok++; porTema[p.t][0]++; } else { if (r !== null) bad++; if (p.s) repasar[p.s] = (repasar[p.s] || 0) + 1; }
+    });
+    var n = actual.length, puntos = neg ? Math.max(0, ok - bad / 2) : ok, nota = n ? Math.round(1000 * puntos / n) / 10 : 0;
+    var h = '<div class="res"><div class="nota">' + String(nota).replace('.', ',') + ' %</div>';
+    h += '<p>' + ok + ' correctas, ' + bad + ' incorrectas y ' + (n - ok - bad) + ' sin responder, de ' + n + '.' + (neg ? ' Con descuento: ' + String(puntos).replace('.', ',') + ' puntos.' : '') + ' Tiempo: ' + fmtT((Date.now() - t0) / 1000) + (porTiempo ? ' (se terminó el tiempo)' : '') + '.</p>';
+    h += '<h3>Por tema</h3><table><tr><th>Tema</th><th>Correctas</th></tr>';
+    Object.keys(porTema).forEach(function(t){ var v = porTema[t]; h += '<tr><td>' + esc(TEMA[t] || t) + '</td><td>' + v[0] + ' / ' + v[1] + '</td></tr>'; });
+    h += '</table>';
+    var rs = Object.keys(repasar);
+    if (rs.length) { h += '<h3>Para repasar</h3><ul>' + rs.map(function(s){ return '<li><a href="index.html#' + s + '">' + esc(SECC[s] || s) + '</a> (' + repasar[s] + ')</li>'; }).join('') + '</ul>'; }
+    else h += '<p class="box ok"><b>¡Todo bien!</b> No hay nada para repasar en estos temas.</p>';
+    h += '<div class="cfgrow">' + (ok < n ? '<button class="btn p" type="button" id="reIncorrectas">Reintentar solo las incorrectas</button>' : '') + '<button class="btn" type="button" id="otraVez">Otra tanda con los mismos temas</button><button class="btn" type="button" id="cambiar">Cambiar temas</button></div>';
+    h += '<p class="sub">Abajo quedan todas las preguntas corregidas, con su explicación.</p></div>';
+    $('resultado').innerHTML = h; $('resultado').classList.remove('hidden');
+    $('juego').insertBefore($('resultado'), $('lista'));
+    var ri = $('reIncorrectas');
+    if (ri) ri.onclick = function(){ empezar(mezclar(actual.filter(function(p, i){ return respuestas[i] !== correcta(p); })).map(prep)); };
+    $('otraVez').onclick = function(){ iniciar(); };
+    $('cambiar').onclick = volver;
+    $('resultado').scrollIntoView({ block: 'start' });
+  }
+  function prep(p){
+    var q = Object.assign({}, p);
+    if (p.y === 'vf') q._o = [{ txt: 'Verdadero', ok: p.a === true }, { txt: 'Falso', ok: p.a === false }];
+    else q._o = mezclar(p.o.map(function(t, k){ return { txt: t, ok: k === p.a }; }));
+    return q;
+  }
+  function iniciar(){
+    var temas = tchk().filter(function(c){ return c.checked; }).map(function(c){ return c.value; });
+    var tipo = segVal.segTipo, cant = parseInt(segVal.segCant, 10);
+    var pool = PREGUNTAS.filter(function(p){ return temas.indexOf(p.t) >= 0 && (tipo === 'ambas' || p.y === tipo); });
+    if (!pool.length) { $('aviso').textContent = 'No hay preguntas con esa combinación. Elegí más temas u otro tipo.'; return; }
+    $('aviso').textContent = '';
+    LS.set('heur-practica', JSON.stringify({ temas: temas, segTipo: tipo, segCant: segVal.segCant, segModo: segVal.segModo, segTiempo: segVal.segTiempo, neg: $('negativo').checked }));
+    var sel = mezclar(pool); if (cant) sel = sel.slice(0, cant);
+    empezar(sel.map(prep));
+  }
+  function volver(){
+    clearInterval(reloj); terminado = true;
+    $('juego').classList.add('hidden'); $('resultado').classList.add('hidden'); $('cfg').classList.remove('hidden');
+    window.scrollTo({ top: 0 });
+  }
+  $('empezar').onclick = iniciar;
+  $('terminar').onclick = function(){ terminar(false); };
+  $('terminar2').onclick = function(){ terminar(false); };
+  $('volverCfg').onclick = function(){ if (terminado || confirm('¿Salir de esta tanda? Se pierden las respuestas.')) volver(); };
+})();
+</script>
+</body>
+</html>

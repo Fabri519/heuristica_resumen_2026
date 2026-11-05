@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heurística y Optimización · Guía completa</title>
+<meta name="description" content="Resumen de Algoritmos Genéticos y Optimización Heurística (UTN FRT): heurísticas, Hill Climbing, Simulated Annealing y Algoritmos Genéticos con selección, cruzamiento y mutación.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5fbf'/%3E%3Cpath d='M10 46 L24 28 L34 38 L46 16 L54 26' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/estilo.css">
+<script src="assets/comun.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav id="nav">
+<div class="navhead"><b>Heurística y Optimización · Guía completa</b>
+<div class="prog"><div class="pbar"><i id="pFill"></i></div><span id="pTxt"></span></div></div>
+
+<div class="mod"><div class="modh"><span class="mn">Inicio</span><span class="mi"></span></div>
+<a href="#s0">0. Cómo estudiar con esto</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 1 · Introducción</span><span class="mi"></span></div>
+<a href="#s1">1. ¿Qué es una heurística?</a>
+<a href="#s2">2. El problema de optimización</a>
+<a href="#s3">3. Clasificación de los métodos</a>
+<a href="#s4">4. Aplicaciones del GITIA</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 2 · Métodos secuenciales</span><span class="mi"></span></div>
+<a href="#s5">5. Hill Climbing</a>
+<a href="#s6">6. Simulated Annealing</a>
+<a href="#shs" class="star">★ Hill Climbing vs Annealing</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 3 · Algoritmos Genéticos</span><span class="mi"></span></div>
+<a href="#s7">7. AG: generalidades y esquema</a>
+<a href="#s8">8. Operadores de selección</a>
+<a class="sub2" href="#s8-med">8.2 Bias, spread, presión, diversidad</a>
+<a class="sub2" href="#s8-rul">8.3 Ruleta con pesos</a>
+<a class="sub2" href="#s8-tor">8.4 Torneo</a>
+<a class="sub2" href="#s8-sus">8.5 SUS</a>
+<a class="sub2" href="#s8-rank">8.6 Ranking lineal y no lineal</a>
+<a href="#s9">9. Operadores de cruzamiento</a>
+<a class="sub2" href="#s9-1p">9.2 Single Point</a>
+<a class="sub2" href="#s9-shuf">9.3 Single Point con Shuffle</a>
+<a class="sub2" href="#s9-mp">9.4 Two-Point y Multi-Point</a>
+<a class="sub2" href="#s9-uni">9.5 Uniform / Scattered</a>
+<a class="sub2" href="#s9-ari">9.6 Aritmético</a>
+<a class="sub2" href="#s9-cube">9.7 Cube</a>
+<a class="sub2" href="#s9-pmx">9.8 Partial Map (PMX)</a>
+<a class="sub2" href="#s9-ox">9.9 Order Based</a>
+<a href="#s10">10. Mutación</a>
+<a href="#s11">11. Ejemplo completo resuelto</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 4 · Para el parcial</span><span class="mi"></span></div>
+<a href="#s12">12. Pares que se confunden</a>
+<a href="#s13">13. Fórmulas y procedimientos</a>
+</div>
+
+<div class="navbtns"><span>Practicar</span>
+<a class="nb p" href="practica.html">🎯 Práctica V/F y multiple choice</a>
+<a class="nb" href="practica.html?modo=examen">⏱ Modo examen</a></div>
+<button type="button" class="resetprog" id="resetProg">Reiniciar mi avance</button>
+</nav>
+
+<main>
+<div class="sbar" id="sbar" data-root="main" data-excluir="#historial,.gancho details>div"><label class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="sq" type="search" placeholder="Buscar en la guía… (ej.: SUS, PMX, temperatura)" aria-label="Buscar en la guía" autocomplete="off"><kbd>/</kbd></label><span class="scount" id="scount" aria-live="polite"></span><button type="button" class="sbtn" id="sprev" aria-label="Resultado anterior">↑</button><button type="button" class="sbtn" id="snext" aria-label="Resultado siguiente">↓</button><button type="button" class="sbtn" id="sclear" aria-label="Borrar búsqueda">✕</button></div>
+<button class="theme-btn nav-btn" id="navBtn" type="button" aria-label="Mostrar u ocultar el índice" title="Mostrar u ocultar el índice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="M5.5 8h1.5M5.5 11h1.5M5.5 14h1.5"/></svg></button>
+<div class="navshade" id="navShade"></div>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Cambiar modo claro u oscuro" title="Cambiar modo claro / oscuro"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+
+<h1>Heurística y Optimización — Guía completa</h1>
+<p class="sub">UTN FRT · Algoritmos Genéticos y Optimización Heurística (Dr. Adrián Will, GITIA) · Módulos 1, 2 y 3<br>Versión 1.0 · 5 de noviembre de 2026</p>
+
+<details id="historial"><summary>Historial de versiones</summary>
+<ul class="vlog">
+<li><div><span class="vtag">v1.0 <small>05/11/2026</small></span></div><div><b>Versión inicial.</b> Módulo 1 (qué es una heurística, optimización, clasificación, proyectos GITIA), Módulo 2 (Hill Climbing y Simulated Annealing) y Módulo 3 (AG simple, cinco operadores de selección, ocho operadores de cruzamiento, mutación y el ejemplo completo). Laboratorios interactivos de ruleta/SUS/torneo, cruzamientos y probabilidad de aceptación. Banco de preguntas V/F y multiple choice por tema.</div></li>
+</ul>
+</details>
+
+<div class="cta">
+<a class="p" href="practica.html"><span class="ico">🎯</span><span>Práctica por tema<small>Elegís unidades, temas y tipo de pregunta</small></span></a>
+<a class="s" href="practica.html?modo=examen"><span class="ico">⏱</span><span>Modo examen<small>Con tiempo y corrección al final</small></span></a>
+<a class="s" href="#s13"><span class="ico">📐</span><span>Fórmulas<small>Todo lo que hay que saber de memoria</small></span></a>
+</div>
+
+<section id="s0" data-tema="-">
+<h2>0. Cómo estudiar con esto</h2>
+<p>La guía sigue el orden de las clases y está separada en <b>módulos</b> (unidades), <b>secciones</b> (temas) e <b>incisos</b> (cada operador por separado). Cada tema cierra con preguntas <b>¿Lo entendiste?</b> con la respuesta escondida, y con un botón para practicar <b>solo ese tema</b> en V/F o multiple choice.</p>
+<div class="grid">
+<div class="card"><h4>Cajas azules</h4>Definiciones y la idea central del tema.</div>
+<div class="card"><h4>Cajas verdes</h4>Lo que conviene llevarse y las reglas prácticas.</div>
+<div class="card"><h4>Cajas ámbar</h4>Puntos donde una diapositiva tiene una errata o una simplificación. Conviene saber las dos versiones.</div>
+<div class="card"><h4>Laboratorios 🧪</h4>Calculadoras para probar la ruleta, el SUS, el torneo, los cruzamientos y la aceptación del recocido con tus propios números.</div>
+</div>
+<div class="box ok"><b>La idea que ordena toda la materia</b>
+Cada método se clasifica con cuatro preguntas: ¿mira <b>una</b> solución o <b>muchas</b> a la vez (secuencial / paralelo)? ¿se inspira en la <b>evolución</b>? ¿acepta solo <b>mejoras</b> (greedy) o a veces acepta <b>empeorar</b>? ¿optimiza <b>uno</b> o <b>varios</b> objetivos? Si podés contestar eso para Hill Climbing, Simulated Annealing y AG, tenés media materia ordenada (sección <a href="#s3">3</a>).</div>
+<p>Dentro de los AG, la otra gran distinción es <b>explotación vs exploración</b>: el cruzamiento explota (combina lo bueno de padres buenos) y la mutación explora (lleva a zonas no visitadas). Y en selección, todo se mide con <b>bias, spread, presión de selección y diversidad genética</b>.</p>
+<p class="sub">El progreso ("aprendido") y el tema elegido se guardan solo en tu navegador.</p>
+</section>
+
+<!-- ================= MÓDULO 1 ================= -->
+
+<section id="s1" data-tema="intro">
+<h2>1. ¿Qué es una heurística?</h2>
+<p>La palabra viene del griego <i>heuriskein</i>: <b>hallar o descubrir</b>. Como metodología científica, la heurística reúne medios auxiliares, principios, reglas, estrategias y programas que facilitan resolver problemas para los que <b>no hay un procedimiento de resolución exacta</b>.</p>
+<div class="box"><b>Definición de la cátedra</b>
+Una heurística es <b>cualquier proceso que se usa para resolver un problema y que funciona bien en la práctica, pero no ofrece garantías</b> de lograrlo. Es un algoritmo, paradigma o familia de algoritmos que se aplica <b>cuando no se puede hacer otra cosa</b>: cuando no existe una solución analítica (determinística) para el problema.</div>
+<p>Las tres preguntas de la primera clase (qué es, para qué sirve, cuándo se usa) tienen <b>la misma respuesta</b>: se usa cuando no hay otro camino.</p>
+
+<h3>1.1 Qué algoritmos califican como heurísticos</h3>
+<p>Califica como heurística <b>todo algoritmo que incluya pasos cuya eficiencia, forma de ajuste, velocidad de convergencia o comportamiento asintótico no esté demostrado</b>. Son algoritmos que funcionan bien en la práctica. Los ejemplos de clase:</p>
+<ul><li>Simplex lineal</li><li>Simplex heurístico (Nelder–Mead)</li><li>El <i>learning rate</i> en Backpropagation</li><li>Google PageRank</li></ul>
+
+<h3>1.2 Determinístico, debatible o heurístico</h3>
+<table><tr><th>Determinístico</th><th>Debatible</th><th>Heurístico</th></tr>
+<tr><td>Manejo de bases de datos<br>Comunicaciones<br>Manejo de stock<br>Hojas de cálculo, procesadores de texto</td>
+<td>Búsquedas por palabra clave (ML)<br>Reconocimiento de rostros<br>Travelling Salesman Problem (TSP)<br>Logística<br>Traducción entre idiomas<br>Google PageRank</td>
+<td>Style Transfer<br>Conducción autónoma<br>Deep Fakes<br>Análisis automático de imágenes médicas<br>Seleccionar partes importantes de un texto</td></tr></table>
+
+<h3>1.3 Determinísticos vs heurísticos</h3>
+<table><tr><th></th><th>Métodos determinísticos</th><th>Métodos heurísticos</th></tr>
+<tr><td><b>Hipótesis</b></td><td>Requieren <b>fuertes hipótesis</b> sobre la función, en general globales: continuidad, existencia de derivadas, convexidad</td><td><b>No requieren hipótesis</b>. Funcionan incluso si no hay una función (por ejemplo, una simulación)</td></tr>
+<tr><td><b>Convergencia</b></td><td><b>Garantizada</b> a un óptimo, pero en general <b>local</b>; sin hipótesis no se puede comprobar si es global</td><td>Convergen a una <b>buena solución</b> (<i>near optimal</i>, como en AG)</td></tr>
+<tr><td><b>Tiempo</b></td><td>Tiempo máximo y promedio de convergencia <b>conocidos</b></td><td>Tiempo máximo y velocidad de convergencia en general <b>no conocidos</b></td></tr>
+<tr><td><b>Repetibilidad</b></td><td>Mismos datos y mismas condiciones iniciales → <b>siempre el mismo resultado</b></td><td>Usan azar: dos corridas pueden dar resultados distintos</td></tr>
+<tr><td><b>Dónde brillan</b></td><td>Problemas con buena estructura matemática</td><td>Casos muy complejos: <b>NP-Hard</b>, gran cantidad de óptimos locales</td></tr></table>
+
+<h3>1.4 ¿Cuándo aplicar métodos heurísticos?</h3>
+<table><tr><th>Situación</th><th>Por qué una heurística</th><th>Ejemplo de clase</th></tr>
+<tr><td>No se puede aplicar otro método</td><td>Faltan hipótesis: funciones no derivables, no continuas, o que ni siquiera son funciones</td><td>Simulaciones (robótica)</td></tr>
+<tr><td>Problemas ruidosos o mal condicionados</td><td>Los métodos aleatorios son <b>robustos</b> y poco sensibles al ruido</td><td>Identificación de fase de clientes en distribución eléctrica</td></tr>
+<tr><td>Gran cantidad de óptimos locales</td><td>Los métodos basados en derivadas quedan atrapados</td><td>Convergencia de redes neuronales</td></tr>
+<tr><td>Problemas reales de gran complejidad</td><td>Alcanza con una buena solución, aunque no sea el óptimo global</td><td>Problemas discretos enormes: 2<sup>100</sup> ≈ 10<sup>30</sup>, 3<sup>200</sup> ≈ 10<sup>95</sup> soluciones</td></tr></table>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Un método heurístico garantiza encontrar el óptimo global?</summary><div>No. Funciona bien en la práctica pero no ofrece garantías. Converge a una buena solución (<i>near optimal</i>).</div></details>
+<details><summary>¿Qué ventaja tiene un método determinístico frente a uno heurístico?</summary><div>Convergencia garantizada (aunque sea a un óptimo local), tiempos de convergencia conocidos y el mismo resultado si se repite con las mismas condiciones iniciales.</div></details>
+<details><summary>¿Por qué una simulación es un caso típico para una heurística?</summary><div>Porque no es una función con fórmula: no hay derivadas ni continuidad que aprovechar, así que los métodos determinísticos no tienen hipótesis en las que apoyarse.</div></details>
+</div>
+</section>
+
+<section id="s2" data-tema="opt">
+<h2>2. El problema de optimización</h2>
+<div class="box"><b>Optimización</b>
+Es un proceso de <b>búsqueda del mejor elemento</b> de un conjunto de elementos disponibles, usando algún criterio. Todos los problemas reales, de la ciencia y de la ingeniería, terminan enfrentando esta tarea.</div>
+<p>Un problema de optimización se escribe como <b>minimizar o maximizar una función</b>:</p>
+<div class="f">min<sub>x</sub> f(x) &nbsp;&nbsp;ó&nbsp;&nbsp; max<sub>x</sub> f(x), &nbsp; x ∈ A</div>
+
+<h3>2.1 Vocabulario</h3>
+<table><tr><th>Término</th><th>Qué es</th></tr>
+<tr><td><b>Función objetivo</b> f</td><td>Asigna un número real a cada x ∈ A y así establece un <b>orden de calidad</b> entre las soluciones</td></tr>
+<tr><td><b>Espacio de búsqueda</b></td><td>El dominio A de la función objetivo</td></tr>
+<tr><td><b>Soluciones candidatas</b> o factibles</td><td>Cada x del espacio de búsqueda</td></tr>
+<tr><td><b>Dimensión del problema</b></td><td>La cantidad de variables</td></tr>
+<tr><td><b>Función de costo</b></td><td>El nombre de la función objetivo cuando se <b>minimiza</b></td></tr>
+<tr><td><b>Fitness</b></td><td>En AG, la función de evaluación (cuánto "vale" cada individuo)</td></tr></table>
+
+<h3>2.2 Óptimo local y óptimo global</h3>
+<p>El ejemplo 1 de clase: minimizar <span class="mono">f(x) = x⁴ + 5x³ + 4x² − 4x + 1</span> con la restricción −4 ≤ x ≤ 1.</p>
+<figure class="diag"><svg viewBox="0 0 640 300" role="img" aria-label="Gráfico del polinomio con su óptimo global y su óptimo local"><line class="grid-l" x1="46.0" y1="14" x2="46.0" y2="266"/><text class="ts" x="46.0" y="282" text-anchor="middle">-4</text><line class="grid-l" x1="162.0" y1="14" x2="162.0" y2="266"/><text class="ts" x="162.0" y="282" text-anchor="middle">-3</text><line class="grid-l" x1="278.0" y1="14" x2="278.0" y2="266"/><text class="ts" x="278.0" y="282" text-anchor="middle">-2</text><line class="grid-l" x1="394.0" y1="14" x2="394.0" y2="266"/><text class="ts" x="394.0" y="282" text-anchor="middle">-1</text><line class="grid-l" x1="510.0" y1="14" x2="510.0" y2="266"/><text class="ts" x="510.0" y="282" text-anchor="middle">0</text><line class="grid-l" x1="626.0" y1="14" x2="626.0" y2="266"/><text class="ts" x="626.0" y="282" text-anchor="middle">1</text><line class="grid-l" x1="46" y1="266.0" x2="626" y2="266.0"/><text class="ts" x="40" y="270.0" text-anchor="end">−10</text><line class="grid-l" x1="46" y1="224.0" x2="626" y2="224.0"/><text class="ts" x="40" y="228.0" text-anchor="end">−5</text><line class="grid-l" x1="46" y1="182.0" x2="626" y2="182.0"/><text class="ts" x="40" y="186.0" text-anchor="end">0</text><line class="grid-l" x1="46" y1="140.0" x2="626" y2="140.0"/><text class="ts" x="40" y="144.0" text-anchor="end">5</text><line class="grid-l" x1="46" y1="98.0" x2="626" y2="98.0"/><text class="ts" x="40" y="102.0" text-anchor="end">10</text><line class="grid-l" x1="46" y1="56.0" x2="626" y2="56.0"/><text class="ts" x="40" y="60.0" text-anchor="end">15</text><line class="grid-l" x1="46" y1="14.0" x2="626" y2="14.0"/><text class="ts" x="40" y="18.0" text-anchor="end">20</text><polyline class="la" points="46.0,39.2 47.9,46.4 49.9,53.4 51.8,60.2 53.7,66.9 55.7,73.3 57.6,79.6 59.5,85.7 61.5,91.7 63.4,97.5 65.3,103.1 67.3,108.5 69.2,113.8 71.1,119.0 73.1,124.0 75.0,128.8 76.9,133.5 78.9,138.0 80.8,142.4 82.7,146.7 84.7,150.8 86.6,154.8 88.5,158.6 90.5,162.3 92.4,165.9 94.3,169.3 96.3,172.6 98.2,175.8 100.1,178.9 102.1,181.8 104.0,184.6 105.9,187.3 107.9,189.9 109.8,192.4 111.7,194.8 113.7,197.0 115.6,199.2 117.5,201.2 119.5,203.2 121.4,205.0 123.3,206.8 125.3,208.4 127.2,210.0 129.1,211.5 131.1,212.8 133.0,214.1 134.9,215.3 136.9,216.4 138.8,217.5 140.7,218.4 142.7,219.3 144.6,220.1 146.5,220.8 148.5,221.4 150.4,222.0 152.3,222.5 154.3,222.9 156.2,223.3 158.1,223.6 160.1,223.8 162.0,224.0 163.9,224.1 165.9,224.2 167.8,224.2 169.7,224.1 171.7,224.0 173.6,223.8 175.5,223.6 177.5,223.3 179.4,223.0 181.3,222.6 183.3,222.2 185.2,221.8 187.1,221.3 189.1,220.7 191.0,220.2 192.9,219.5 194.9,218.9 196.8,218.2 198.7,217.5 200.7,216.7 202.6,216.0 204.5,215.1 206.5,214.3 208.4,213.4 210.3,212.5 212.3,211.6 214.2,210.7 216.1,209.7 218.1,208.7 220.0,207.7 221.9,206.7 223.9,205.7 225.8,204.6 227.7,203.5 229.7,202.4 231.6,201.3 233.5,200.2 235.5,199.1 237.4,198.0 239.3,196.8 241.3,195.7 243.2,194.5 245.1,193.4 247.1,192.2 249.0,191.0 250.9,189.8 252.9,188.7 254.8,187.5 256.7,186.3 258.7,185.1 260.6,184.0 262.5,182.8 264.5,181.6 266.4,180.5 268.3,179.3 270.3,178.1 272.2,177.0 274.1,175.9 276.1,174.7 278.0,173.6 279.9,172.5 281.9,171.4 283.8,170.3 285.7,169.2 287.7,168.1 289.6,167.1 291.5,166.0 293.5,165.0 295.4,164.0 297.3,163.0 299.3,162.0 301.2,161.0 303.1,160.1 305.1,159.1 307.0,158.2 308.9,157.3 310.9,156.4 312.8,155.6 314.7,154.7 316.7,153.9 318.6,153.1 320.5,152.3 322.5,151.5 324.4,150.8 326.3,150.1 328.3,149.4 330.2,148.7 332.1,148.1 334.1,147.4 336.0,146.8 337.9,146.2 339.9,145.7 341.8,145.1 343.7,144.6 345.7,144.1 347.6,143.7 349.5,143.2 351.5,142.8 353.4,142.4 355.3,142.1 357.3,141.7 359.2,141.4 361.1,141.1 363.1,140.9 365.0,140.6 366.9,140.4 368.9,140.2 370.8,140.1 372.7,139.9 374.7,139.8 376.6,139.7 378.5,139.6 380.5,139.6 382.4,139.6 384.3,139.6 386.3,139.6 388.2,139.7 390.1,139.8 392.1,139.9 394.0,140.0 395.9,140.2 397.9,140.3 399.8,140.5 401.7,140.7 403.7,141.0 405.6,141.3 407.5,141.5 409.5,141.8 411.4,142.2 413.3,142.5 415.3,142.9 417.2,143.3 419.1,143.7 421.1,144.1 423.0,144.6 424.9,145.0 426.9,145.5 428.8,146.0 430.7,146.5 432.7,147.1 434.6,147.6 436.5,148.2 438.5,148.7 440.4,149.3 442.3,149.9 444.3,150.5 446.2,151.2 448.1,151.8 450.1,152.5 452.0,153.1 453.9,153.8 455.9,154.5 457.8,155.2 459.7,155.9 461.7,156.6 463.6,157.3 465.5,158.0 467.5,158.7 469.4,159.4 471.3,160.1 473.3,160.8 475.2,161.6 477.1,162.3 479.1,163.0 481.0,163.7 482.9,164.4 484.9,165.2 486.8,165.9 488.7,166.6 490.7,167.3 492.6,167.9 494.5,168.6 496.5,169.3 498.4,169.9 500.3,170.6 502.3,171.2 504.2,171.8 506.1,172.4 508.1,173.0 510.0,173.6 511.9,174.2 513.9,174.7 515.8,175.2 517.7,175.7 519.7,176.1 521.6,176.6 523.5,177.0 525.5,177.4 527.4,177.7 529.3,178.1 531.3,178.4 533.2,178.6 535.1,178.9 537.1,179.1 539.0,179.2 540.9,179.3 542.9,179.4 544.8,179.5 546.7,179.5 548.7,179.4 550.6,179.3 552.5,179.2 554.5,179.0 556.4,178.8 558.3,178.5 560.3,178.1 562.2,177.7 564.1,177.3 566.1,176.8 568.0,176.2 569.9,175.6 571.9,174.9 573.8,174.2 575.7,173.3 577.7,172.5 579.6,171.5 581.5,170.5 583.5,169.4 585.4,168.2 587.3,167.0 589.3,165.6 591.2,164.2 593.1,162.7 595.1,161.2 597.0,159.5 598.9,157.8 600.9,156.0 602.8,154.0 604.7,152.0 606.7,149.9 608.6,147.7 610.5,145.4 612.5,143.0 614.4,140.5 616.3,137.9 618.3,135.2 620.2,132.3 622.1,129.4 624.1,126.4 626.0,123.2"/><circle cx="166.6" cy="224.2" r="6" fill="none" stroke="var(--warn)" stroke-width="2.5"/><line class="ln" x1="166.6" y1="232.2" x2="166.6" y2="244.2"/><text class="tw" x="156.6" y="258.2" text-anchor="start">Óptimo global (x ≈ −2,96; f ≈ −5,02)</text><circle cx="545.7" cy="179.5" r="6" fill="none" stroke="var(--acc)" stroke-width="2.5"/><line class="ln" x1="545.7" y1="171.5" x2="545.7" y2="123.5"/><text class="ta" x="555.7" y="117.5" text-anchor="end">Óptimo local (x ≈ 0,31; f ≈ 0,30)</text><text class="ts" x="330" y="298" text-anchor="middle">x</text></svg><figcaption>El <b>óptimo global</b> es el mejor de todo el espacio de búsqueda; un <b>óptimo local</b> es el mejor solo en su vecindad. Un método que baja "siguiendo la pendiente" desde x = 0,5 termina en el local y nunca ve el global.</figcaption></figure>
+
+<h3>2.3 Las funciones de prueba de clase</h3>
+<table><tr><th>Ejemplo</th><th>Función</th><th>Restricción</th><th>Qué muestra</th></tr>
+<tr><td>1 · Polinomio</td><td><span class="mono">x⁴+5x³+4x²−4x+1</span></td><td>−4 ≤ x ≤ 1</td><td>Un óptimo local y uno global</td></tr>
+<tr><td>2 · Parábola</td><td><span class="mono">x² + y²</span></td><td>−2 ≤ x, y ≤ 2</td><td>Un solo óptimo (en (0,0)): problema fácil</td></tr>
+<tr><td>3</td><td><span class="mono">0,2(x²+y²) + sin²(x²+y²)</span></td><td>−2 ≤ x, y ≤ 2</td><td>Anillos de óptimos locales alrededor del global</td></tr>
+<tr><td>4 · Rastrigin</td><td><span class="mono">20 + x² + y² − 10[cos(πx) + cos(πy)]</span></td><td>−5,12 ≤ x, y ≤ 5,12</td><td>Muchísimos óptimos locales en grilla; mínimo global 0 en (0,0)</td></tr></table>
+<div class="box warn"><b>Rastrigin en la bibliografía</b>
+La forma más común es <span class="mono">10n + Σ[xᵢ² − 10cos(2πxᵢ)]</span>, con 2π. La diapositiva usa cos(πx). Para el parcial, la idea es la misma: muchos óptimos locales y un único global en el origen.</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Cómo se llama la función objetivo cuando el problema es de minimización?</summary><div>Función de costo.</div></details>
+<details><summary>¿Qué es la dimensión del problema?</summary><div>La cantidad de variables de la función objetivo.</div></details>
+<details><summary>¿Por qué Rastrigin es difícil para Hill Climbing?</summary><div>Porque tiene una grilla enorme de óptimos locales: desde casi cualquier punto inicial, Hill Climbing termina en el local más cercano.</div></details>
+</div>
+</section>
+
+<section id="s3" data-tema="clasif">
+<h2>3. Clasificación de los métodos heurísticos</h2>
+<table><tr><th>Criterio</th><th>Opción A</th><th>Opción B</th></tr>
+<tr><td><b>Cuántas soluciones mira por paso</b></td><td><b>Secuenciales</b> (de trayectoria): una sola solución en cada paso</td><td><b>Paralelos</b> (poblacionales): muchas soluciones a la vez</td></tr>
+<tr><td><b>Inspiración</b></td><td><b>Evolutivos</b>: se basan en la evolución en el tiempo de un individuo o población</td><td><b>No evolutivos</b></td></tr>
+<tr><td><b>Qué acepta</b></td><td><b>Greedy</b> (<i>plus strategy</i>): solo acepta una solución si es <b>mejor</b> que la actual</td><td><b>No greedy</b>: acepta soluciones no tan buenas como la actual, con alguna probabilidad</td></tr>
+<tr><td><b>Cuántos objetivos</b></td><td><b>Mono objetivo</b>: optimiza un solo parámetro</td><td><b>Multi objetivo</b>: varios parámetros, entre los que hay que encontrar un <b>compromiso</b></td></tr></table>
+
+<h3>3.1 Los métodos más difundidos</h3>
+<div class="grid">
+<div class="card"><h4>Secuenciales (de trayectoria)</h4><ul><li>Hill Climbing</li><li>Simulated Annealing</li><li>Tabu Search</li></ul></div>
+<div class="card"><h4>Paralelos (poblacionales)</h4><ul><li>Genetic Algorithms</li><li>Ant Colony Optimization</li><li>Particle Swarm Optimization</li><li>Artificial Immune Systems</li><li>Differential Evolution</li></ul></div>
+<div class="card"><h4>Otros mencionados</h4><ul><li>k-Nearest Neighbor</li><li>Estimation of Distribution Algorithms</li><li>Gravity Search, Attraction Forces</li><li>Quantum e Imperial Algorithms</li><li>Immune Systems: Danger Theory, Limited Resources, Immune Networks</li></ul></div>
+</div>
+
+<h3>3.2 Los tres métodos de la materia, clasificados</h3>
+<table><tr><th></th><th>Secuencial / Paralelo</th><th>Greedy</th><th>Evolutivo</th><th>Metáfora</th></tr>
+<tr><td><b>Hill Climbing</b></td><td>Secuencial</td><td><b>Sí</b></td><td>No</td><td>Persona caminando (subiendo una colina)</td></tr>
+<tr><td><b>Simulated Annealing</b></td><td>Secuencial</td><td><b>No</b></td><td>No</td><td>Recocido de metales</td></tr>
+<tr><td><b>Algoritmos Genéticos</b></td><td><b>Paralelo</b> (población)</td><td>—</td><td><b>Sí</b></td><td>Evolución y selección natural (Darwin)</td></tr></table>
+
+<h3>3.3 Cómo se implementa una heurística (5 pasos)</h3>
+<ol>
+<li><b>Identificar el nombre del problema</b>: Bin Packing, Knapsack, una variante del TSP, General Assignment Problem…</li>
+<li><b>Bajar y leer papers</b> del tema.</li>
+<li><b>Elegir la heurística.</b></li>
+<li><b>Implementación básica.</b></li>
+<li><b>Incorporar las restricciones operativas.</b></li></ol>
+<div class="box ok"><b>Por qué importa el paso 1</b>
+Si sabés que tu problema "es un Knapsack" o "es un GAP", ya existe literatura que te dice qué heurísticas funcionan. Es lo que pasó con el problema de la zafra (sección <a href="#s4">4</a>).</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué quiere decir que un método sea greedy?</summary><div>Que solo acepta una nueva solución si es mejor que la actual (<i>plus strategy</i>). Hill Climbing es greedy; Simulated Annealing no.</div></details>
+<details><summary>¿Tabu Search es secuencial o poblacional?</summary><div>Secuencial (de trayectoria), como Hill Climbing y Simulated Annealing.</div></details>
+<details><summary>¿Qué caracteriza a un problema multi objetivo?</summary><div>Que hay que optimizar más de un parámetro y encontrar un compromiso entre ellos (por ejemplo, el techo solar: eficiencia de los paneles vs superficie vs volumen).</div></details>
+</div>
+</section>
+
+<section id="s4" data-tema="gitia">
+<h2>4. Aplicaciones del GITIA</h2>
+<p>El <b>GITIA</b> (Grupo de Investigación en Tecnologías Informáticas Avanzadas) es de la UTN FRT: fundado en <b>2009</b>, homologado por UTN en <b>2012</b>. Hace I+D+i en inteligencia artificial y sus aplicaciones, especializado en <b>IoT y análisis inteligente de datos</b>; es interdisciplinario, publica en revistas internacionales y tiene patentes.</p>
+<table><tr><th>Proyecto</th><th>Problema</th><th>Técnica</th></tr>
+<tr><td><b>Zafra</b>: transporte de caña de azúcar</td><td>Logística (la actividad azucarera era el 40 % del PBI provincial en 2008). ~200 parcelas por día; matching en un grafo bipartito con 15<sup>200</sup> ≈ 1,653·10<sup>235</sup> posibilidades. Se modeló como <b>Variable Profit Generalized Assignment Problem (GAP)</b></td><td>Se probaron PSO, sistemas multiagente y Niching GA. <b>Ganaron los AG</b>: resultados cerca del óptimo en 7–8 segundos</td></tr>
+<tr><td><b>SIOVA</b></td><td>Optimizar el consumo de vapor de los tachos de cocimiento de un ingenio (esquema de descargas)</td><td>Optimización con resultados en diagrama de Gantt y medición en fábrica</td></tr>
+<tr><td><b>Patente 1 · Peak Shaving</b></td><td>Sobrecarga de transformadores por los aires acondicionados en verano (Demand Side Management)</td><td>Dispositivos inteligentes controlados con <b>Sistemas Inmunológicos Artificiales</b></td></tr>
+<tr><td><b>Patente 2 · PHID</b></td><td>Identificar a qué fase está conectado cada cliente de la red eléctrica (balance de cargas, pérdidas, contingencias)</td><td><b>Algoritmos Evolutivos</b> sobre datos de consumo</td></tr>
+<tr><td>Otras con AG</td><td colspan="2">Selección de variables (consumo eléctrico, radiación solar), patrones de diseño de software, ajuste de parámetros de modelos de transformadores, topología de la red de distribución, balance de cargas en subestaciones</td></tr></table>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué método dio los mejores resultados en el problema de la zafra?</summary><div>Los Algoritmos Genéticos, con soluciones cerca del óptimo en 7 a 8 segundos.</div></details>
+<details><summary>¿Qué técnica usa la patente de Peak Shaving?</summary><div>Sistemas Inmunológicos Artificiales.</div></details>
+</div>
+</section>
+
+<!-- ================= MÓDULO 2 ================= -->
+
+<section id="s5" data-tema="hc">
+<h2>5. Hill Climbing</h2>
+<h3>5.1 Clasificación y características</h3>
+<div class="grid">
+<div class="card"><h4>Secuencial</h4>Considera una sola solución en cada paso.</div>
+<div class="card"><h4>Greedy</h4>Solo acepta una solución si es mejor que la actual.</div>
+<div class="card"><h4>No evolutivo</h4>Metáfora de una <b>persona caminando</b> que siempre sube.</div>
+</div>
+<ul>
+<li>Pertenece a la familia de los <b>algoritmos de búsqueda local</b>.</li>
+<li><b>No garantiza</b> encontrar el óptimo global.</li>
+<li>Encuentra <b>solo el óptimo local más cercano al punto inicial</b>.</li></ul>
+
+<h3>5.2 El algoritmo</h3>
+<ol>
+<li>Tomar una solución inicial <b>X₀</b> y un tamaño máximo del paso <b>ε<sub>max</sub></b>.</li>
+<li>Crear al azar un <b>vector de avance</b> R = (r₁, r₂, …, rₙ).</li>
+<li>Generar al azar un paso ε &lt; ε<sub>max</sub> (ε = rand() · ε<sub>max</sub>).</li>
+<li>Calcular la nueva solución: <b>X = X₀ + ε·R</b>.</li>
+<li>Evaluar y comparar F(X) con F(X₀).</li>
+<li>Si F(X) &gt; F(X₀), entonces <b>X₀ = X</b> (se busca un máximo de F).</li>
+<li>Volver a 2.</li></ol>
+<figure class="diag"><svg viewBox="0 0 640 330" role="img" aria-label="Esquema de Hill Climbing">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arr"/></marker></defs>
+<rect class="n1" x="170" y="8" width="300" height="34" rx="8"/><text x="320" y="30" text-anchor="middle" class="tb">X₀ , ε<tspan font-size="10" dy="3">max</tspan><tspan dy="-3">, t = 0</tspan></text>
+<rect class="n0" x="170" y="62" width="300" height="34" rx="8"/><text x="320" y="84" text-anchor="middle">R = (r₁ … rₙ) al azar · ε = rand()·εmax</text>
+<rect class="n0" x="170" y="116" width="300" height="34" rx="8"/><text x="320" y="138" text-anchor="middle" class="tb">X = X₀ + ε·R &nbsp;→ evaluar F(X)</text>
+<polygon class="n3" points="320,170 430,205 320,240 210,205"/><text x="320" y="210" text-anchor="middle" class="tb">¿F(X) &gt; F(X₀)?</text>
+<rect class="n2" x="470" y="188" width="140" height="34" rx="8"/><text x="540" y="210" text-anchor="middle" class="tg">X₀ = X</text>
+<rect class="n0" x="245" y="270" width="150" height="34" rx="8"/><text x="320" y="292" text-anchor="middle">t = t + 1</text>
+<path class="ln" d="M320 42V60" marker-end="url(#ah)"/><path class="ln" d="M320 96V114" marker-end="url(#ah)"/><path class="ln" d="M320 150V168" marker-end="url(#ah)"/>
+<path class="ln" d="M430 205H468" marker-end="url(#ah)"/><text x="447" y="198" class="tg" text-anchor="middle">Sí</text>
+<path class="ln" d="M320 240V268" marker-end="url(#ah)"/><text x="306" y="258" class="tw" text-anchor="end">No</text>
+<path class="ln" d="M540 222V287H397" marker-end="url(#ah)"/>
+<path class="ln" d="M245 287H120V79H168" marker-end="url(#ah)"/><text x="112" y="180" class="ts" text-anchor="end">repetir</text>
+</svg><figcaption>Hill Climbing: un paso al azar alrededor de X₀; si mejora, me muevo; si no, me quedo y pruebo otra dirección. Nunca acepta empeorar.</figcaption></figure>
+<div class="box warn"><b>Errata en la diapositiva del algoritmo</b>
+El paso 6 dice "Si F(X) &gt; F(X₀) entonces X = X₀". Es al revés: si la nueva solución es mejor, <b>la actual pasa a ser la nueva</b>, o sea <b>X₀ = X</b>. El esquema de la diapositiva siguiente sí lo muestra bien.</div>
+
+<h3>5.3 El vector dirección R</h3>
+<p>En la clase de ajuste se comparan tres formas de generar R (en 2 dimensiones):</p>
+<table><tr><th>Variante</th><th>Cómo se genera</th><th>Efecto</th></tr>
+<tr><td>1</td><td>rᵢ = rand()</td><td>Componentes en [0, 1): <b>solo avanza en direcciones positivas</b>, nunca puede ir hacia atrás</td></tr>
+<tr><td>2</td><td>rᵢ = 2·rand() − 1</td><td>Componentes en [−1, 1): explora <b>todas las direcciones</b>, pero los pasos en diagonal son más largos que los paralelos a los ejes (el vector cae en un cuadrado)</td></tr>
+<tr><td>3</td><td>rᵢ = 2·rand() − 1 y luego <b>R = R / ‖R‖</b></td><td>Vector <b>unitario</b>: todas las direcciones con la misma longitud. El tamaño del paso lo decide solo ε</td></tr></table>
+<div class="f">‖R‖ = √(r₁² + r₂² + … + rₙ²)<small>Norma del vector. Dividir por ella normaliza R (longitud 1).</small></div>
+
+<h3>5.4 Tamaño máximo del paso ε<sub>max</sub></h3>
+<table><tr><th></th><th>Muy pequeño (ej.: 0,01)</th><th>Demasiado grande (ej.: 1,0)</th><th>Equilibrado (ej.: 0,1)</th></tr>
+<tr><td>Ventaja</td><td>Los cambios pequeños mejoran continuamente la precisión</td><td>Avance más rápido hacia la zona del óptimo y mejor exploración</td><td rowspan="3"><b>Preciso y rápido</b></td></tr>
+<tr><td>Desventaja</td><td>Avance lento hacia el óptimo; solo llega al más cercano</td><td>Cerca del óptimo necesita muchos intentos para mejorar</td></tr>
+<tr><td>En resumen</td><td><b>Preciso pero lento</b></td><td><b>Rápido pero impreciso</b></td></tr></table>
+<p>En <b>los dos extremos</b> se necesitan más iteraciones (más evaluaciones de la función): el algoritmo se vuelve lento e ineficiente.</p>
+
+<h3>5.5 Condición de terminación</h3>
+<table><tr><th>Criterio</th><th>Problema</th></tr>
+<tr><td>Alcanzar un valor de evaluación deseado</td><td>No siempre se conoce el valor de f en el óptimo</td></tr>
+<tr><td>Cantidad fija de iteraciones</td><td>Depende fuertemente de la <b>dimensión</b> del problema</td></tr>
+<tr><td><b>Propuesta de la cátedra:</b> terminar tras <b>N iteraciones consecutivas sin mejorar</b></td><td>No depende de la dimensión del problema ✓</td></tr></table>
+
+<h3>5.6 Ejemplos de clase</h3>
+<p>Funciones de 2 y de N variables, y la <b>reconstrucción de una imagen con 150 círculos de colores</b> (cada solución es la posición, el radio y el color de los círculos; se acepta un cambio si la imagen se parece más a la original).</p>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué Hill Climbing se queda en óptimos locales?</summary><div>Porque es greedy: solo acepta mejoras. Al llegar a la cima de una colina, todo paso pequeño empeora y no hay forma de bajar para cruzar a otra.</div></details>
+<details><summary>¿Qué problema tiene generar R con rᵢ = rand()?</summary><div>Que todas las componentes son positivas: el algoritmo solo puede avanzar en un cuadrante y nunca retroceder.</div></details>
+<details><summary>¿Qué condición de terminación propone la cátedra y por qué?</summary><div>N iteraciones consecutivas sin mejora, porque no depende de la dimensión del problema ni de conocer el valor del óptimo.</div></details>
+</div>
+</section>
+
+<section id="s6" data-tema="sa">
+<h2>6. Simulated Annealing (recocido simulado)</h2>
+<h3>6.1 La metáfora</h3>
+<p>Imita el <b>recocido del acero y las cerámicas</b>: el material se calienta y luego se <b>enfría lentamente</b> para obtener una estructura cristalina de <b>menor energía</b> (el óptimo global).</p>
+<ul><li>El <b>calor</b> hace que los átomos aumenten su energía y puedan desplazarse.</li>
+<li>El <b>enfriamiento lento</b> recristaliza el material en configuraciones de menor energía.</li>
+<li>Una temperatura inicial muy alta o un <b>enfriamiento muy rápido</b> dejan imperfecciones en la estructura → <b>óptimos locales</b>.</li></ul>
+
+<h3>6.2 Clasificación y características</h3>
+<div class="grid">
+<div class="card"><h4>Secuencial</h4>Una sola solución por paso (encuentra una sola solución).</div>
+<div class="card"><h4>No greedy</h4>Acepta soluciones de <b>menor calidad</b> que la actual, con cierta probabilidad.</div>
+<div class="card"><h4>No evolutivo</h4>Metáfora del recocido de metales.</div>
+</div>
+<ul><li><b>Sensible</b> al parámetro de enfriamiento y a la función de enfriamiento usada.</li>
+<li><b>Sumamente rápido una vez ajustado</b>, si no se cambia "demasiado" el problema.</li></ul>
+
+<h3>6.3 Algoritmo básico</h3>
+<p>Es Hill Climbing con un paso más: si la nueva solución es peor, <b>igual se puede aceptar</b>.</p>
+<ol><li>Tomar X₀ y ε<sub>max</sub>.</li><li>Crear R al azar.</li><li>Generar ε &lt; ε<sub>max</sub>.</li><li>X = X₀ + ε·R.</li><li>Evaluar y comparar F(X) con F(X₀).</li>
+<li>Si F(X) &gt; F(X₀) → X₀ = X.</li>
+<li><b>Si no</b>, se acepta igual con una probabilidad que depende del <b>tiempo t</b> y de la <b>temperatura inicial T₀</b>: se tira s = rand() y se acepta si <b>P(T₀, t) ≥ s</b>.</li>
+<li>Volver a 2.</li></ol>
+
+<h3>6.4 Función de enfriamiento</h3>
+<div class="f">T = T₀ · e<sup>−μ·t</sup><small>T₀ = temperatura inicial · μ = parámetro de enfriamiento · t = iteración</small></div>
+<figure class="diag"><svg viewBox="0 0 640 260" role="img" aria-label="Curvas de enfriamiento T = T0 exp(-mu t)"><line class="grid-l" x1="46.0" y1="14" x2="46.0" y2="226"/><text class="ts" x="46.0" y="242" text-anchor="middle">0</text><line class="grid-l" x1="130.8" y1="14" x2="130.8" y2="226"/><text class="ts" x="130.8" y="242" text-anchor="middle">100</text><line class="grid-l" x1="215.6" y1="14" x2="215.6" y2="226"/><text class="ts" x="215.6" y="242" text-anchor="middle">200</text><line class="grid-l" x1="300.4" y1="14" x2="300.4" y2="226"/><text class="ts" x="300.4" y="242" text-anchor="middle">300</text><line class="grid-l" x1="385.2" y1="14" x2="385.2" y2="226"/><text class="ts" x="385.2" y="242" text-anchor="middle">400</text><line class="grid-l" x1="470.0" y1="14" x2="470.0" y2="226"/><text class="ts" x="470.0" y="242" text-anchor="middle">500</text><line class="grid-l" x1="46" y1="226.0" x2="470" y2="226.0"/><text class="ts" x="40" y="230.0" text-anchor="end">0</text><line class="grid-l" x1="46" y1="173.0" x2="470" y2="173.0"/><text class="ts" x="40" y="177.0" text-anchor="end">0,25·T₀</text><line class="grid-l" x1="46" y1="120.0" x2="470" y2="120.0"/><text class="ts" x="40" y="124.0" text-anchor="end">0,5·T₀</text><line class="grid-l" x1="46" y1="67.0" x2="470" y2="67.0"/><text class="ts" x="40" y="71.0" text-anchor="end">0,75·T₀</text><line class="grid-l" x1="46" y1="14.0" x2="470" y2="14.0"/><text class="ts" x="40" y="18.0" text-anchor="end">1·T₀</text><polyline class="lg" points="46.0,14.0 50.2,16.1 54.5,18.2 58.7,20.3 63.0,22.3 67.2,24.3 71.4,26.3 75.7,28.3 79.9,30.3 84.2,32.2 88.4,34.2 92.6,36.1 96.9,38.0 101.1,39.8 105.4,41.7 109.6,43.5 113.8,45.3 118.1,47.1 122.3,48.9 126.6,50.7 130.8,52.4 135.0,54.2 139.3,55.9 143.5,57.6 147.8,59.2 152.0,60.9 156.2,62.5 160.5,64.2 164.7,65.8 169.0,67.4 173.2,68.9 177.4,70.5 181.7,72.1 185.9,73.6 190.2,75.1 194.4,76.6 198.6,78.1 202.9,79.6 207.1,81.0 211.4,82.5 215.6,83.9 219.8,85.3 224.1,86.7 228.3,88.1 232.6,89.5 236.8,90.8 241.0,92.2 245.3,93.5 249.5,94.8 253.8,96.1 258.0,97.4 262.2,98.7 266.5,100.0 270.7,101.2 275.0,102.5 279.2,103.7 283.4,104.9 287.7,106.1 291.9,107.3 296.2,108.5 300.4,109.7 304.6,110.8 308.9,112.0 313.1,113.1 317.4,114.2 321.6,115.3 325.8,116.4 330.1,117.5 334.3,118.6 338.6,119.7 342.8,120.7 347.0,121.8 351.3,122.8 355.5,123.8 359.8,124.9 364.0,125.9 368.2,126.9 372.5,127.8 376.7,128.8 381.0,129.8 385.2,130.7 389.4,131.7 393.7,132.6 397.9,133.6 402.2,134.5 406.4,135.4 410.6,136.3 414.9,137.2 419.1,138.1 423.4,138.9 427.6,139.8 431.8,140.7 436.1,141.5 440.3,142.4 444.6,143.2 448.8,144.0 453.0,144.8 457.3,145.6 461.5,146.4 465.8,147.2 470.0,148.0"/><line class="lg" x1="480" y1="34" x2="500" y2="34"/><text class="tg" x="506" y="38">μ = 0,002 (lento)</text><polyline class="la" points="46.0,14.0 50.2,24.3 54.5,34.2 58.7,43.5 63.0,52.4 67.2,60.9 71.4,68.9 75.7,76.6 79.9,83.9 84.2,90.8 88.4,97.4 92.6,103.7 96.9,109.7 101.1,115.3 105.4,120.7 109.6,125.9 113.8,130.7 118.1,135.4 122.3,139.8 126.6,144.0 130.8,148.0 135.0,151.8 139.3,155.4 143.5,158.9 147.8,162.1 152.0,165.3 156.2,168.2 160.5,171.0 164.7,173.7 169.0,176.3 173.2,178.7 177.4,181.0 181.7,183.2 185.9,185.3 190.2,187.3 194.4,189.2 198.6,191.0 202.9,192.7 207.1,194.3 211.4,195.8 215.6,197.3 219.8,198.7 224.1,200.0 228.3,201.3 232.6,202.5 236.8,203.7 241.0,204.7 245.3,205.8 249.5,206.8 253.8,207.7 258.0,208.6 262.2,209.4 266.5,210.3 270.7,211.0 275.0,211.8 279.2,212.4 283.4,213.1 287.7,213.7 291.9,214.3 296.2,214.9 300.4,215.4 304.6,216.0 308.9,216.4 313.1,216.9 317.4,217.4 321.6,217.8 325.8,218.2 330.1,218.6 334.3,218.9 338.6,219.3 342.8,219.6 347.0,219.9 351.3,220.2 355.5,220.5 359.8,220.8 364.0,221.0 368.2,221.3 372.5,221.5 376.7,221.7 381.0,221.9 385.2,222.1 389.4,222.3 393.7,222.5 397.9,222.7 402.2,222.8 406.4,223.0 410.6,223.1 414.9,223.3 419.1,223.4 423.4,223.5 427.6,223.6 431.8,223.8 436.1,223.9 440.3,224.0 444.6,224.1 448.8,224.2 453.0,224.3 457.3,224.3 461.5,224.4 465.8,224.5 470.0,224.6"/><line class="la" x1="480" y1="60" x2="500" y2="60"/><text class="ta" x="506" y="64">μ = 0,01</text><polyline class="lw" points="46.0,14.0 50.2,60.9 54.5,97.4 58.7,125.9 63.0,148.0 67.2,165.3 71.4,178.7 75.7,189.2 79.9,197.3 84.2,203.7 88.4,208.6 92.6,212.4 96.9,215.4 101.1,217.8 105.4,219.6 109.6,221.0 113.8,222.1 118.1,223.0 122.3,223.6 126.6,224.2 130.8,224.6 135.0,224.9 139.3,225.1 143.5,225.3 147.8,225.5 152.0,225.6 156.2,225.7 160.5,225.8 164.7,225.8 169.0,225.8 173.2,225.9 177.4,225.9 181.7,225.9 185.9,225.9 190.2,226.0 194.4,226.0 198.6,226.0 202.9,226.0 207.1,226.0 211.4,226.0 215.6,226.0 219.8,226.0 224.1,226.0 228.3,226.0 232.6,226.0 236.8,226.0 241.0,226.0 245.3,226.0 249.5,226.0 253.8,226.0 258.0,226.0 262.2,226.0 266.5,226.0 270.7,226.0 275.0,226.0 279.2,226.0 283.4,226.0 287.7,226.0 291.9,226.0 296.2,226.0 300.4,226.0 304.6,226.0 308.9,226.0 313.1,226.0 317.4,226.0 321.6,226.0 325.8,226.0 330.1,226.0 334.3,226.0 338.6,226.0 342.8,226.0 347.0,226.0 351.3,226.0 355.5,226.0 359.8,226.0 364.0,226.0 368.2,226.0 372.5,226.0 376.7,226.0 381.0,226.0 385.2,226.0 389.4,226.0 393.7,226.0 397.9,226.0 402.2,226.0 406.4,226.0 410.6,226.0 414.9,226.0 419.1,226.0 423.4,226.0 427.6,226.0 431.8,226.0 436.1,226.0 440.3,226.0 444.6,226.0 448.8,226.0 453.0,226.0 457.3,226.0 461.5,226.0 465.8,226.0 470.0,226.0"/><line class="lw" x1="480" y1="86" x2="500" y2="86"/><text class="tw" x="506" y="90">μ = 0,05 (rápido)</text><text class="ts" x="258" y="258" text-anchor="middle">iteración t</text></svg><figcaption>Con μ grande la temperatura cae enseguida (se "congela" pronto y se comporta como Hill Climbing); con μ chico baja despacio y explora más tiempo.</figcaption></figure>
+
+<h3>6.5 Algoritmo completo</h3>
+<p>En la versión completa la probabilidad de aceptar una peor depende de la <b>temperatura T</b> y de <b>cuánto peor</b> es la nueva solución:</p>
+<div class="f">ΔF = F(X₀) − F(X) &nbsp;&nbsp;&nbsp; P = e<sup>−ΔF / T</sup> &nbsp;&nbsp;&nbsp; se acepta X si s &lt; P, con s = rand()<small>Maximización: si X es peor, ΔF &gt; 0 y entonces 0 &lt; P &lt; 1.</small></div>
+<figure class="diag"><svg viewBox="0 0 640 360" role="img" aria-label="Esquema de Simulated Annealing">
+<defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arr"/></marker></defs>
+<rect class="n1" x="150" y="8" width="340" height="34" rx="8"/><text x="320" y="30" text-anchor="middle" class="tb">X₀, εmax, μ, T₀, t = 0</text>
+<rect class="n0" x="150" y="60" width="340" height="34" rx="8"/><text x="320" y="82" text-anchor="middle">R al azar · ε = rand()·εmax · X = X₀ + ε·R</text>
+<polygon class="n3" points="320,112 420,146 320,180 220,146"/><text x="320" y="151" text-anchor="middle" class="tb">¿F(X) &gt; F(X₀)?</text>
+<rect class="n2" x="470" y="129" width="140" height="34" rx="8"/><text x="540" y="151" text-anchor="middle" class="tg">X₀ = X</text>
+<rect class="n0" x="150" y="198" width="340" height="34" rx="8"/><text x="320" y="220" text-anchor="middle">T = T₀·e^(−μt) · ΔF = F(X₀) − F(X) · P = e^(−ΔF/T)</text>
+<polygon class="n3" points="320,250 420,284 320,318 220,284"/><text x="320" y="289" text-anchor="middle" class="tb">s = rand() ; ¿s &lt; P?</text>
+<rect class="n0" x="40" y="320" width="120" height="32" rx="8"/><text x="100" y="341" text-anchor="middle">t = t + 1</text>
+<path class="ln" d="M320 42V58" marker-end="url(#ah2)"/><path class="ln" d="M320 94V110" marker-end="url(#ah2)"/>
+<path class="ln" d="M420 146H468" marker-end="url(#ah2)"/><text x="444" y="139" class="tg" text-anchor="middle">Sí</text>
+<path class="ln" d="M320 180V196" marker-end="url(#ah2)"/><path class="ln" d="M320 232V248" marker-end="url(#ah2)"/><text x="306" y="192" class="tw" text-anchor="end">No</text>
+<path class="ln" d="M420 284H540V165" marker-end="url(#ah2)"/><text x="470" y="277" class="tg" text-anchor="middle">Sí: acepto la peor</text>
+<path class="ln" d="M220 284H100V318" marker-end="url(#ah2)"/><text x="160" y="277" class="tw" text-anchor="middle">No</text>
+<path class="ln" d="M610 146H625V345H162" marker-end="url(#ah2)"/>
+<path class="ln" d="M40 336H20V77H148" marker-end="url(#ah2)"/>
+</svg><figcaption>La única diferencia con Hill Climbing es la rama "No": en vez de descartar siempre la solución peor, se la acepta con probabilidad P.</figcaption></figure>
+
+<h4>Cómo se comporta P = e<sup>−ΔF/T</sup></h4>
+<table><tr><th>Si…</th><th>P</th><th>Interpretación</th></tr>
+<tr><td>La temperatura T es <b>alta</b> (al principio)</td><td>Cerca de 1</td><td>Acepta casi cualquier empeoramiento: <b>explora</b></td></tr>
+<tr><td>La temperatura T es <b>baja</b> (al final)</td><td>Cerca de 0</td><td>Casi no acepta empeorar: se comporta como <b>Hill Climbing</b></td></tr>
+<tr><td>La solución nueva es <b>apenas peor</b> (ΔF chico)</td><td>Alta</td><td>Empeorar un poco es fácil</td></tr>
+<tr><td>La solución nueva es <b>mucho peor</b> (ΔF grande)</td><td>Baja</td><td>Empeorar mucho es raro</td></tr></table>
+<p>Ejemplo: con ΔF = 0,5 y T = 1, P = e<sup>−0,5</sup> ≈ <b>0,61</b>; con la misma ΔF y T = 0,1, P = e<sup>−5</sup> ≈ <b>0,007</b>.</p>
+
+<div class="lab" id="labSA"><h4>🧪 Laboratorio: probabilidad de aceptar una solución peor</h4>
+<div class="row"><label for="saT0">T₀</label><input type="number" id="saT0" value="1" step="0.1" min="0.01" style="width:80px"><label for="saMu">μ</label><input type="number" id="saMu" value="0.01" step="0.001" min="0" style="width:90px"><label for="saDF">ΔF</label><input type="number" id="saDF" value="0.5" step="0.1" min="0" style="width:80px"></div>
+<div class="row"><label for="saT">Iteración t = <b id="saTv">0</b></label><input type="range" id="saT" min="0" max="1000" value="0"></div>
+<div class="row out" id="saOut"></div></div>
+
+<h3>6.6 Ejemplos de clase</h3>
+<ul><li><b>Rastrigin</b>: gracias a aceptar empeoramientos, puede salir de los óptimos locales de la grilla.</li>
+<li><b>Techo solar del Stevens Institute of Technology</b>: problema <b>multi objetivo</b> que minimiza a la vez la ineficiencia de los paneles (desviación de la normal de cada panel respecto del vector solar de cada hora), la superficie del techo (costo de construcción) y el volumen del edificio (costo de acondicionamiento).</li></ul>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué pasa si el enfriamiento es demasiado rápido?</summary><div>La temperatura cae enseguida, P se vuelve casi 0 y el algoritmo deja de aceptar empeoramientos antes de haber explorado: queda atrapado en un óptimo local (como las imperfecciones del metal enfriado de golpe).</div></details>
+<details><summary>En la versión básica, ¿de qué depende la probabilidad de aceptación? ¿Y en la completa?</summary><div>En la básica, del tiempo t y de la temperatura inicial T₀. En la completa, de la temperatura T y de ΔF (cuánto peor es la nueva solución).</div></details>
+<details><summary>Si ΔF crece, ¿P crece o disminuye?</summary><div>Disminuye: cuanto peor es la solución nueva, menos probable es aceptarla.</div></details>
+</div>
+</section>
+
+<section id="shs" data-tema="hc,sa">
+<h2>★ Hill Climbing vs Simulated Annealing</h2>
+<table><tr><th></th><th>Hill Climbing</th><th>Simulated Annealing</th></tr>
+<tr><td>Clasificación</td><td>Secuencial · <b>greedy</b> · no evolutivo</td><td>Secuencial · <b>no greedy</b> · no evolutivo</td></tr>
+<tr><td>Metáfora</td><td>Persona caminando</td><td>Recocido de metales</td></tr>
+<tr><td>Si la solución nueva es peor</td><td>La descarta siempre</td><td>La acepta con probabilidad P = e<sup>−ΔF/T</sup></td></tr>
+<tr><td>Óptimos locales</td><td>Se queda en el más cercano al punto inicial</td><td>Puede escapar de ellos mientras la temperatura sea alta</td></tr>
+<tr><td>Parámetros</td><td>X₀, ε<sub>max</sub>, condición de terminación</td><td>Además T₀ y μ (función de enfriamiento)</td></tr>
+<tr><td>Cuando T → 0</td><td>—</td><td>Se comporta como Hill Climbing</td></tr></table>
+<div class="box ok"><b>Para recordar</b>
+Simulated Annealing = Hill Climbing + aceptar empeoramientos con una probabilidad que baja con el tiempo. Los dos encuentran <b>una sola</b> solución (son secuenciales).</div>
+</section>
+
+<!-- ================= MÓDULO 3 ================= -->
+
+<section id="s7" data-tema="ag">
+<h2>7. Algoritmos Genéticos: generalidades y esquema</h2>
+<h3>7.1 Inspiración</h3>
+<p>Los AG forman parte de los <b>Algoritmos Evolutivos</b> y se inspiran en la <b>teoría de la evolución de Darwin</b>: imitan la <b>selección natural</b>, donde los individuos mejor adaptados tienen <b>más</b> posibilidades de reproducirse, pero <b>los menos adaptados también tienen alguna</b>.</p>
+<div class="grid">
+<div class="card"><h4>Selección</h4>Elige a los individuos mejor adaptados para reproducirse.</div>
+<div class="card"><h4>Cruzamiento</h4>Combina al azar la información de los individuos, codificada en sus <b>genes</b>.</div>
+<div class="card"><h4>Mutación</h4>Modificaciones aleatorias en algunos individuos que les dan cualidades únicas.</div>
+</div>
+
+<h3>7.2 Características</h3>
+<ul><li><b>Paralelo</b>: considera muchas soluciones a la vez en cada paso, llamadas <b>población</b>.</li>
+<li><b>Evolutivo</b>: inspirado en la evolución y la selección natural.</li></ul>
+<table><tr><th>Biología</th><th>En el AG</th></tr>
+<tr><td>Individuo</td><td>Una solución candidata</td></tr>
+<tr><td>Cromosoma / genes</td><td>El vector de la solución / cada coordenada</td></tr>
+<tr><td>Adaptación (aptitud)</td><td>El valor de <b>fitness</b> (función de evaluación)</td></tr>
+<tr><td>Población · generación</td><td>El conjunto de soluciones · cada iteración</td></tr>
+<tr><td>Padres → hijos (<i>offspring</i>)</td><td>Soluciones que se cruzan → soluciones nuevas</td></tr></table>
+
+<h3>7.3 Esquema básico</h3>
+<figure class="diag"><svg viewBox="0 0 640 210" role="img" aria-label="Esquema básico del AG simple">
+<defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arr"/></marker></defs>
+<rect class="n1" x="10" y="20" width="110" height="40" rx="8"/><text x="65" y="45" text-anchor="middle" class="tb">Población inicial</text>
+<rect class="n0" x="150" y="20" width="90" height="40" rx="8"/><text x="195" y="45" text-anchor="middle">Evaluar</text>
+<polygon class="n3" points="320,10 380,40 320,70 260,40"/><text x="320" y="45" text-anchor="middle" class="tb">¿Finaliza?</text>
+<rect class="n2" x="420" y="20" width="200" height="40" rx="8"/><text x="520" y="45" text-anchor="middle" class="tg">Población final</text>
+<rect class="n1" x="420" y="120" width="120" height="40" rx="8"/><text x="480" y="145" text-anchor="middle" class="tb">Selección</text>
+<rect class="n1" x="270" y="120" width="120" height="40" rx="8"/><text x="330" y="145" text-anchor="middle" class="tb">Cruzamiento</text>
+<rect class="n1" x="120" y="120" width="120" height="40" rx="8"/><text x="180" y="145" text-anchor="middle" class="tb">Mutación</text>
+<rect class="n0" x="10" y="170" width="120" height="34" rx="8"/><text x="70" y="192" text-anchor="middle">Nueva población</text>
+<path class="ln" d="M120 40H148" marker-end="url(#ah3)"/><path class="ln" d="M240 40H258" marker-end="url(#ah3)"/>
+<path class="ln" d="M380 40H418" marker-end="url(#ah3)"/><text x="398" y="33" class="tg" text-anchor="middle">Sí</text>
+<path class="ln" d="M320 70V95H480V118" marker-end="url(#ah3)"/><text x="335" y="88" class="tw">No</text>
+<path class="ln" d="M420 140H392" marker-end="url(#ah3)"/><path class="ln" d="M270 140H242" marker-end="url(#ah3)"/>
+<path class="ln" d="M120 140H70V168" marker-end="url(#ah3)"/>
+<path class="ln" d="M10 187H4V75H195V62" marker-end="url(#ah3)"/>
+</svg><figcaption>Cada vuelta del ciclo es una <b>generación</b>: evaluar → (¿terminar?) → seleccionar → cruzar → mutar → nueva población.</figcaption></figure>
+
+<h3>7.4 Población inicial y evaluación</h3>
+<p>Se crean individuos con valores <b>al azar</b>, dentro de los <b>límites definidos para cada coordenada</b> (la matriz de <i>bounds</i>), y cada uno se evalúa con la <b>función de fitness</b>.</p>
+<div class="cromwrap">
+<div class="crom"><span class="lb">Sol. 1 · F = 548</span><div class="genes"><span class="g a">1</span><span class="g a">5</span><span class="g a">3</span><span class="g a">2</span><span class="g a">8</span><span class="g a">9</span><span class="g a">4</span></div></div>
+<div class="crom"><span class="lb">Sol. 2 · F = 289</span><div class="genes"><span class="g b">2</span><span class="g b">2</span><span class="g b">0</span><span class="g b">3</span><span class="g b">4</span><span class="g b">5</span><span class="g b">1</span></div></div>
+<div class="crom"><span class="lb">Sol. 3 · F = 169</span><div class="genes"><span class="g c">9</span><span class="g c">2</span><span class="g c">1</span><span class="g c">0</span><span class="g c">3</span><span class="g c">4</span><span class="g c">5</span></div></div>
+<div class="crom"><span class="lb">Sol. 4 · F = 105</span><div class="genes"><span class="g ">7</span><span class="g ">6</span><span class="g ">1</span><span class="g ">3</span><span class="g ">6</span><span class="g ">0</span><span class="g ">9</span></div></div>
+<figcaption>Cuatro individuos de 7 genes con su fitness (ejemplo de clase).</figcaption></div>
+
+<h3>7.5 Elitismo</h3>
+<ul><li>Consiste en <b>preservar una parte de la población intacta</b>, que pasa a la siguiente generación sin cambios.</li>
+<li>Por lo general se guarda una copia de los <b>mejores individuos</b> para que no se pierdan por la aplicación de algún operador.</li>
+<li>El resto de la población se completa con los otros operadores (selección, cruzamiento y mutación).</li>
+<li>Se aplica a un <b>porcentaje bajo</b>: alrededor del <b>2 %</b> de la población.</li></ul>
+
+<h3>7.6 Esquema completo del AG simple</h3>
+<figure class="diag"><svg viewBox="0 0 640 320" role="img" aria-label="Esquema completo con porcentajes">
+<defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arr"/></marker></defs>
+<rect class="n1" x="10" y="8" width="500" height="34" rx="6"/><text x="260" y="30" text-anchor="middle" class="tb">Población inicial (100 %)</text>
+<rect class="n3" x="530" y="8" width="100" height="34" rx="6"/><text x="580" y="30" text-anchor="middle" class="tw">Élite (2 %)</text>
+<rect class="n1" x="10" y="70" width="500" height="34" rx="6"/><text x="260" y="92" text-anchor="middle" class="tb">Población seleccionada y mezclada (100 %)</text>
+<rect class="n0" x="10" y="132" width="320" height="34" rx="6"/><text x="170" y="154" text-anchor="middle">Offspring (80 %) · se cruzan</text>
+<rect class="n0" x="340" y="132" width="170" height="34" rx="6"/><text x="425" y="154" text-anchor="middle">No cruzada (20 %)</text>
+<rect class="n0" x="10" y="194" width="320" height="34" rx="6"/><text x="170" y="216" text-anchor="middle">Offspring (80 %)</text>
+<rect class="n0" x="340" y="194" width="82" height="34" rx="6"/><text x="381" y="216" text-anchor="middle">Mut. (10 %)</text>
+<rect class="n0" x="428" y="194" width="82" height="34" rx="6"/><text x="469" y="216" text-anchor="middle">Sel. (10 %)</text>
+<rect class="n1" x="10" y="250" width="500" height="30" rx="6"/><text x="260" y="270" text-anchor="middle" class="tb">Población evaluada (100 %)</text>
+<rect class="n2" x="10" y="290" width="420" height="28" rx="6"/><text x="220" y="309" text-anchor="middle" class="tg">Mejores individuos (98 %)</text>
+<rect class="n3" x="436" y="290" width="74" height="28" rx="6"/><text x="473" y="309" text-anchor="middle" class="tw">Élite</text>
+<path class="ln" d="M510 25H528" marker-end="url(#ah4)"/><text x="575" y="58" class="ts" text-anchor="middle">elitismo</text>
+<path class="ln" d="M260 42V68" marker-end="url(#ah4)"/><text x="268" y="60" class="ts">selección y mezcla</text>
+<path class="ln" d="M170 104V130" marker-end="url(#ah4)"/><path class="ln" d="M425 104V130" marker-end="url(#ah4)"/><text x="178" y="122" class="ts">cruzamiento</text>
+<path class="ln" d="M170 166V192" marker-end="url(#ah4)"/><path class="ln" d="M381 166V192" marker-end="url(#ah4)"/><path class="ln" d="M469 166V192" marker-end="url(#ah4)"/><text x="388" y="185" class="ts">mutación</text>
+<path class="ln" d="M260 228V248" marker-end="url(#ah4)"/><text x="268" y="243" class="ts">evaluación</text>
+<path class="ln" d="M580 42V304H512" marker-end="url(#ah4)"/>
+</svg><figcaption>La élite (2 %) se copia directamente desde la población inicial. Del total seleccionado y mezclado, el 80 % se cruza y el 20 % no; de ese 20 %, la mitad (10 %) pasa por mutación y la otra mitad (10 %) pasa tal cual. Se evalúa todo y se quedan los mejores 98 % más la élite.</figcaption></figure>
+
+<h3>7.7 Exploración vs explotación</h3>
+<table><tr><th></th><th>Cruzamiento</th><th>Mutación</th></tr>
+<tr><td>Rol principal</td><td><b>Explotación</b> del espacio de búsqueda</td><td><b>Exploración</b> del espacio de búsqueda</td></tr>
+<tr><td>Cómo</td><td>Opera sobre padres elegidos por sus buenas características e intenta extraerlas y mejorarlas ("inteligentemente")</td><td>Lleva a áreas posiblemente no abordadas, cercanas a una buena solución</td></tr>
+<tr><td>A cuánta población</td><td>A la mayoría (en el esquema, 80 %), por parejas</td><td>A un <b>porcentaje bajo</b></td></tr>
+<tr><td>Cuándo</td><td>Inmediatamente después de la selección</td><td>Inmediatamente después del cruzamiento</td></tr></table>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué los AG se clasifican como paralelos?</summary><div>Porque en cada paso trabajan con muchas soluciones a la vez: la población.</div></details>
+<details><summary>¿Para qué sirve el elitismo?</summary><div>Para que los mejores individuos no se pierdan por un cruzamiento o una mutación: se copian intactos a la siguiente generación (alrededor del 2 %).</div></details>
+<details><summary>¿Qué operador explota y cuál explora?</summary><div>El cruzamiento explota; la mutación explora.</div></details>
+</div>
+</section>
+
+<section id="s8" data-tema="sel">
+<h2>8. Operadores de selección</h2>
+<h3>8.1 Qué es la selección</h3>
+<div class="box"><b>Selección</b>
+Proceso por el cual se determina la <b>cantidad de veces que cada individuo será elegido para reproducirse</b> y/o para pasar a la generación siguiente (según la arquitectura elegida). También se llama así al operador que elige a los individuos a reproducir.</div>
+<ul><li>Se hace <b>con repetición</b>: un individuo puede ser elegido más de una vez.</li>
+<li>Se basa en el <b>fitness</b>: elige más veces a los mejor adaptados, pero <b>da probabilidad de ser elegidos a todos</b>.</li>
+<li>En general, la probabilidad de un individuo de ser elegido <b>no coincide</b> con el número de veces que efectivamente se lo elige: los generadores aleatorios no siguen exactamente la distribución, sobre todo con <b>pocos tiros</b>. La diferencia disminuye al aumentar la muestra.</li></ul>
+
+<h3 id="s8-med">8.2 Cómo se mide un operador de selección</h3>
+<h5>Bias (desviación)</h5>
+<p>Diferencia <b>en valor absoluto</b> entre la probabilidad de un individuo de ser seleccionado y el número de veces que <b>efectivamente</b> es seleccionado (<i>trials</i>, como proporción de los tiros). Cuantifica la tendencia del operador a no cumplir lo esperado. <b>El valor óptimo es 0.</b></p>
+<p>Segunda definición de la clase: diferencia entre la probabilidad de selección y el <b>fitness normalizado</b> del individuo, que "a priori" debería coincidir con esa probabilidad:</p>
+<div class="f">F<sub>norm</sub>(x) = F(x) / [1 + F(x)] &nbsp;(para F &gt; 0) &nbsp;&nbsp; ó &nbsp;&nbsp; F<sub>norm</sub>(x) = [F(x) − m] / [M − m] &nbsp;(para m ≤ F ≤ M)</div>
+<p>Ejemplo de clase (5 individuos, 5 tiros de ruleta):</p>
+<table><tr><th>Individuo</th><th class="c">Probabilidad p</th><th class="c">Veces elegido</th><th class="c">Proporción</th><th class="c">Bias |p − prop.|</th></tr>
+<tr><td>S1</td><td class="c">0,36</td><td class="c">1</td><td class="c">1/5 = 0,2</td><td class="c">0,16</td></tr>
+<tr><td>S4</td><td class="c">0,292</td><td class="c">2</td><td class="c">2/5 = 0,4</td><td class="c">0,108</td></tr>
+<tr><td>S2</td><td class="c">0,19</td><td class="c">0</td><td class="c">0</td><td class="c">0,19</td></tr>
+<tr><td>S3</td><td class="c">0,13</td><td class="c">2</td><td class="c">2/5 = 0,4</td><td class="c">0,27</td></tr>
+<tr><td>S5</td><td class="c">0,022</td><td class="c">0</td><td class="c">0</td><td class="c">0,022</td></tr></table>
+<p class="sub">La columna de bias la calculamos nosotros a partir de los datos de la diapositiva.</p>
+
+<h5>Spread (dispersión)</h5>
+<p>Rango de <b>cantidad de veces</b> que un individuo puede llegar a ser elegido en una sola aplicación del operador: <span class="mono">Spread = [min(Vᵢ), max(Vᵢ)]</span>. Por la aleatoriedad, es la medida del <b>peor caso posible</b>.</p>
+<ul><li>Se relaciona con la <b>velocidad de dispersión</b> de una buena solución: cuánto tarda en llenar la población con copias de sí misma. Ese problema se llama <b>Crowding o convergencia prematura</b>.</li>
+<li>Un <b>spread mínimo</b> es básico para que el AG funcione bien: una buena solución necesita más generaciones para copar la población. Conviene <b>retrasar la convergencia</b> hasta haber explorado el espacio.</li>
+<li>En la ruleta el spread es el <b>máximo posible, [0, n]</b>: es posible (aunque poco probable) que un individuo no salga nunca o salga en todos los tiros.</li></ul>
+
+<h5>Selective pressure (presión de selección)</h5>
+<p>Probabilidad del <b>mejor individuo</b> de ser seleccionado comparada con el <b>promedio</b> de la población (o las veces que efectivamente se lo elige vs el promedio).</p>
+<table><tr><th>Presión alta</th><th>Presión baja</th></tr>
+<tr><td>El mejor es elegido muchísimas veces y copa rápido la población → <b>Crowding</b></td><td>Individuos de baja calidad se reproducen en exceso → <b>convergencia lenta</b></td></tr></table>
+
+<h5>Genetic diversity (diversidad genética)</h5>
+<p>Proporción de la población que <b>no son copias</b> unos de otros. Hay <b>pérdida de diversidad</b> cuando una parte de la población no pasa sus características a la siguiente generación, por ejemplo por <b>exceso de mutación, crowding o presión de selección excesiva</b>. Tener diversidad significa que la población todavía no llegó al crowding.</p>
+<div class="box warn"><b>Nombre en la diapositiva</b>
+En la lista de medidas aparece "GENETIC DIVERSITY – Deriva genética", pero la diapositiva que la define la llama <b>diversidad genética</b>. Es la misma medida.</div>
+
+<h3 id="s8-rul">8.3 Ruleta con pesos (Roulette Wheel)</h3>
+<ul><li><b>Muestreo estocástico</b>: se eligen individuos al azar con un peso proporcional a su fitness.</li>
+<li><b>Con reemplazo</b>: un individuo elegido mantiene exactamente la misma probabilidad en el siguiente tiro.</li></ul>
+<h4>Los 4 pasos</h4>
+<ol>
+<li><b>Ajustar el fitness</b> para que ningún peso sea negativo ni cero:
+<div class="f">F<sub>a</sub>(Sᵢ) = F(Sᵢ) − m + ε, &nbsp; m = min F(Sᵢ), ε &gt; 0<small>Se suma ε para que el peor no quede con peso 0 y todos tengan chance.</small></div></li>
+<li><b>Calcular los pesos</b> (entre 0 y 1, suman 1):
+<div class="f">P(Sᵢ) = F<sub>a</sub>(Sᵢ) / T, &nbsp; T = Σ F<sub>a</sub>(Sₖ)</div></li>
+<li><b>Construir la ruleta</b> con los puntos de corte acumulados:
+<div class="f">Cᵢ = Σ<sub>k=1..i</sub> P(Sₖ) &nbsp;&nbsp; (C₀ = 0, C<sub>N</sub> = 1)</div></li>
+<li><b>Tirar</b> números al azar s ∈ (0, 1): sale <b>Sᵢ ⇔ s ∈ [Cᵢ₋₁, Cᵢ]</b>.</li></ol>
+<h4>Ejemplo de clase</h4>
+<table><tr><th></th><th class="c">S1</th><th class="c">S2</th><th class="c">S3</th><th class="c">S4</th><th>Cuenta</th></tr>
+<tr><td>F(Sᵢ)</td><td class="c">5,4</td><td class="c">2,8</td><td class="c">1,6</td><td class="c">1,2</td><td>m = 1,2 · ε = 0,1</td></tr>
+<tr><td>F<sub>a</sub> = F − m + ε</td><td class="c">4,3</td><td class="c">1,7</td><td class="c">0,5</td><td class="c">0,1</td><td>T = 6,6</td></tr>
+<tr><td>P = F<sub>a</sub>/T</td><td class="c">0,65</td><td class="c">0,26</td><td class="c">0,08</td><td class="c">0,01</td><td>suman 1</td></tr>
+<tr><td>Cᵢ acumulado</td><td class="c">0,65</td><td class="c">0,91</td><td class="c">0,99</td><td class="c">1</td><td></td></tr></table>
+<div class="cromwrap"><div class="ruleta"><div style="width:65%;background:#1f5fbf">S1 · 0,65</div><div style="width:26%;background:#0e8a6a">S2 · 0,26</div><div style="width:8%;background:#b45309">S3</div><div style="width:1%;background:#7c3aed"></div><span class="pt" style="left:34%" data-n="0,34"></span><span class="pt" style="left:94%" data-n="0,94"></span><span class="pt" style="left:81%" data-n="0,81"></span><span class="pt" style="left:13%" data-n="0,13"></span></div><div class="rulaxis"><span style="left:0">0</span><span style="left:65%">0,65</span><span style="left:91%">0,91</span><span style="left:99%">0,99</span></div>
+<figcaption>Tiros 0,34 → <b>S1</b> · 0,94 → <b>S3</b> (cae entre 0,91 y 0,99) · 0,81 → <b>S2</b> · 0,13 → <b>S1</b>. (La diapositiva muestra los tiros; la asignación la hicimos acá.)</figcaption></div>
+<h4>Características</h4>
+<table><tr><th>Bias</th><td>En general <b>grande</b>, por los errores del generador aleatorio con pocos tiros. Igual puede funcionar bien en poblaciones grandes (más de 100 individuos)</td></tr>
+<tr><th>Spread</th><td><b>[0, número de tiros]</b>, el máximo posible: un subintervalo puede no salir nunca o salir siempre, llenando la población con copias de un individuo en una sola generación</td></tr>
+<tr><th>Eficiencia</th><td>Un número aleatorio por tiro; <b>O(n log n)</b> (buscar en qué intervalo cae cada tiro)</td></tr></table>
+
+<h3 id="s8-tor">8.4 Selección por torneo</h3>
+<ol><li>Se eligen <b>k individuos uniformemente al azar</b> de toda la población.</li>
+<li>Gana el torneo (y se reproduce) <b>el mejor de ellos</b> según el fitness.</li>
+<li>Se repite hasta tener los individuos necesarios.</li></ol>
+<p><b>k = tamaño del torneo</b>: parámetro crítico, usualmente <b>k = 2</b>. Es el factor que <b>controla la presión de selección</b>:</p>
+<table><tr><th>k mayor</th><th>k menor</th></tr>
+<tr><td>Mayor presión de selección: el mejor de la población gana todos o casi todos los torneos</td><td>Menor presión: un óptimo local tiene más chances de ganar porque se compara con pocas soluciones</td></tr></table>
+<table><tr><th>Bias</th><td><b>Grande</b>: aunque k·n &gt; tamaño de la población, quedan individuos que no participaron de ningún torneo, y uno bueno o malo puede quedar mucho tiempo sin ser considerado</td></tr>
+<tr><th>Spread</th><td><b>[0, número de tiros]</b>, el máximo: una solución puede no salir nunca o la mejor ganar todos los torneos</td></tr>
+<tr><th>Eficiencia</th><td><b>O(n)</b>: dos números aleatorios por cada solución a seleccionar (con k = 2)</td></tr></table>
+<div class="box ok"><b>Ventaja escondida del torneo</b>
+Solo compara fitness ("¿cuál es mejor?"), así que no necesita ajustar el fitness a valores positivos ni normalizarlo como la ruleta.</div>
+
+<h3 id="s8-sus">8.5 Stochastic Universal Sampling (SUS)</h3>
+<ol><li>Elegir <b>un solo número al azar</b> p ∈ [0, 1/n], donde n es la cantidad de tiros.</li>
+<li>Dividir el intervalo [0, 1] según las probabilidades (igual que la ruleta).</li>
+<li>Generar <b>n punteros equiespaciados</b>: <span class="mono">{ p, p + 1/n, p + 2/n, …, p + (n−1)/n }</span>. Todos quedan entre 0 y 1.</li>
+<li>Elegir según el subintervalo en que cae cada puntero.</li></ol>
+<p>Es como una ruleta con <b>n agujas</b> repartidas parejo que se gira <b>una sola vez</b>.</p>
+<div class="cromwrap"><div class="ruleta"><div style="width:36%;background:#1f5fbf">S1 · 0,36</div><div style="width:19%;background:#0e8a6a">S2</div><div style="width:14%;background:#b45309">S3</div><div style="width:29%;background:#7c3aed">S4 · 0,29</div><div style="width:2%;background:#64748b"></div><span class="pt" style="left:10%" data-n="p"></span><span class="pt" style="left:30%" data-n="p+.2"></span><span class="pt" style="left:50%" data-n="p+.4"></span><span class="pt" style="left:70%" data-n="p+.6"></span><span class="pt" style="left:90%" data-n="p+.8"></span></div><div class="rulaxis"><span style="left:0">0</span><span style="left:36%">0,36</span><span style="left:55%">0,55</span><span style="left:69%">0,69</span><span style="left:98%">0,98</span></div>
+<figcaption>Ejemplo propio con la población del <a href="#s11">ejemplo completo</a> (n = 5, p = 0,1): punteros 0,1 y 0,3 → S1 · 0,5 → S2 · 0,7 y 0,9 → S4. Lo esperado era n·p = 1,8 · 0,95 · 0,7 · 1,46 · 0,11: cada uno sale ⌊n·pᵢ⌋ o ⌈n·pᵢ⌉ veces.</figcaption></div>
+<table><tr><th>Bias</th><td><b>Cero</b>: la parte determinística asegura que cada individuo cumpla su probabilidad con bastante aproximación, incluso en poblaciones chicas</td></tr>
+<tr><th>Spread</th><td><b>Mínimo</b>: [⌊n·pᵢ⌋, ⌈n·pᵢ⌉]. Cada individuo sale como mínimo ⌊n·pᵢ⌋ veces y como máximo ⌊n·pᵢ⌋ + 1, y no hay mala suerte que lo cambie</td></tr>
+<tr><th>Eficiencia</th><td><b>Alta, O(n)</b>: un solo número aleatorio, sin importar la cantidad de tiros</td></tr></table>
+<div class="box ok"><b>La frase de clase</b> SUS: <b>cero bias, mínimo spread, altamente eficiente.</b></div>
+
+<h3 id="s8-rank">8.6 Rank Based Fitness Assignment (selección por ranking)</h3>
+<p>No es un método de selección completo: <b>reescala el fitness</b> según la posición en un ranking, y después se usa <b>SUS o ruleta</b> para elegir. Resuelve dos problemas:</p>
+<table><tr><th>Ejemplo 1 · Presión excesiva (crowding)</th><th>Ejemplo 2 · Presión baja (convergencia lenta)</th></tr>
+<tr><td>f = 15,52 · 12,31 · 16,11 · 11,04 · <b>89,93</b><br>p = 0,11 · 0,09 · 0,11 · 0,08 · <b>0,62</b><br>Un individuo se lleva el 62 % de la ruleta y copa la población.</td>
+<td>f = 0,50 · 0,31 · 0,36 · 0,43 · 0,49<br>p = 0,24 · 0,15 · 0,17 · 0,20 · 0,23<br>Todos parecidos: el mejor casi no recibe más copias que el peor.</td></tr></table>
+<h4>Ranking lineal</h4>
+<ol><li>Evaluar la población con la función original.</li>
+<li>Ordenar en un ranking <b>de peor a mejor</b>: el peor en la posición 1, el mejor en la posición N.</li>
+<li>Asignar a cada uno un fitness lineal que depende <b>solo de su posición</b> (no del valor original).</li>
+<li>Aplicar otro método (SUS o ruleta) para completar la selección.</li></ol>
+<div class="f">LR(pos) = (2 − SP) + 2·(SP − 1)·(pos − 1)/(N − 1), &nbsp;&nbsp; 1 ≤ SP ≤ 2, &nbsp; 0 ≤ LR ≤ 2<small>SP controla la presión de selección. El peor recibe 2 − SP y el mejor recibe SP. Los valores siempre suman N.</small></div>
+<table><tr><th>SP</th><th>Fórmula</th><th>Efecto</th></tr>
+<tr><td>1</td><td>LR = 1 para todos</td><td>Presión nula: todos con la misma probabilidad</td></tr>
+<tr><td>1,2</td><td>LR = 0,8 + 0,4·(pos − 1)/(N − 1)</td><td>Presión suave</td></tr>
+<tr><td>2</td><td>LR = 2·(pos − 1)/(N − 1)</td><td>Presión máxima: el peor recibe 0</td></tr></table>
+<figure class="diag"><svg viewBox="0 0 640 250" role="img" aria-label="Fitness por ranking lineal para distintos SP"><line class="grid-l" x1="46.0" y1="14" x2="46.0" y2="216"/><text class="ts" x="46.0" y="232" text-anchor="middle">1</text><line class="grid-l" x1="98.7" y1="14" x2="98.7" y2="216"/><text class="ts" x="98.7" y="232" text-anchor="middle">2</text><line class="grid-l" x1="151.3" y1="14" x2="151.3" y2="216"/><text class="ts" x="151.3" y="232" text-anchor="middle">3</text><line class="grid-l" x1="204.0" y1="14" x2="204.0" y2="216"/><text class="ts" x="204.0" y="232" text-anchor="middle">4</text><line class="grid-l" x1="256.7" y1="14" x2="256.7" y2="216"/><text class="ts" x="256.7" y="232" text-anchor="middle">5</text><line class="grid-l" x1="309.3" y1="14" x2="309.3" y2="216"/><text class="ts" x="309.3" y="232" text-anchor="middle">6</text><line class="grid-l" x1="362.0" y1="14" x2="362.0" y2="216"/><text class="ts" x="362.0" y="232" text-anchor="middle">7</text><line class="grid-l" x1="414.7" y1="14" x2="414.7" y2="216"/><text class="ts" x="414.7" y="232" text-anchor="middle">8</text><line class="grid-l" x1="467.3" y1="14" x2="467.3" y2="216"/><text class="ts" x="467.3" y="232" text-anchor="middle">9</text><line class="grid-l" x1="520.0" y1="14" x2="520.0" y2="216"/><text class="ts" x="520.0" y="232" text-anchor="middle">10</text><line class="grid-l" x1="46" y1="216.0" x2="520" y2="216.0"/><text class="ts" x="40" y="220.0" text-anchor="end">0</text><line class="grid-l" x1="46" y1="165.5" x2="520" y2="165.5"/><text class="ts" x="40" y="169.5" text-anchor="end">0,5</text><line class="grid-l" x1="46" y1="115.0" x2="520" y2="115.0"/><text class="ts" x="40" y="119.0" text-anchor="end">1</text><line class="grid-l" x1="46" y1="64.5" x2="520" y2="64.5"/><text class="ts" x="40" y="68.5" text-anchor="end">1,5</text><line class="grid-l" x1="46" y1="14.0" x2="520" y2="14.0"/><text class="ts" x="40" y="18.0" text-anchor="end">2</text><line class="ln" x1="46.0" y1="115.0" x2="520.0" y2="115.0"/><circle cx="46.0" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="98.7" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="151.3" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="204.0" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="256.7" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="309.3" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="362.0" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="414.7" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="467.3" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><circle cx="520.0" cy="115.0" r="3.2" class="ln" style="fill:var(--card)"/><text class="ts" x="530.0" y="119.0">SP = 1</text><line class="la" x1="46.0" y1="165.5" x2="520.0" y2="64.5"/><circle cx="46.0" cy="165.5" r="3.2" class="la" style="fill:var(--card)"/><circle cx="98.7" cy="154.3" r="3.2" class="la" style="fill:var(--card)"/><circle cx="151.3" cy="143.1" r="3.2" class="la" style="fill:var(--card)"/><circle cx="204.0" cy="131.8" r="3.2" class="la" style="fill:var(--card)"/><circle cx="256.7" cy="120.6" r="3.2" class="la" style="fill:var(--card)"/><circle cx="309.3" cy="109.4" r="3.2" class="la" style="fill:var(--card)"/><circle cx="362.0" cy="98.2" r="3.2" class="la" style="fill:var(--card)"/><circle cx="414.7" cy="86.9" r="3.2" class="la" style="fill:var(--card)"/><circle cx="467.3" cy="75.7" r="3.2" class="la" style="fill:var(--card)"/><circle cx="520.0" cy="64.5" r="3.2" class="la" style="fill:var(--card)"/><text class="ta" x="530.0" y="68.5">SP = 1,5</text><line class="lw" x1="46.0" y1="216.0" x2="520.0" y2="14.0"/><circle cx="46.0" cy="216.0" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="98.7" cy="193.6" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="151.3" cy="171.1" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="204.0" cy="148.7" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="256.7" cy="126.2" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="309.3" cy="103.8" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="362.0" cy="81.3" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="414.7" cy="58.9" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="467.3" cy="36.4" r="3.2" class="lw" style="fill:var(--card)"/><circle cx="520.0" cy="14.0" r="3.2" class="lw" style="fill:var(--card)"/><text class="tw" x="530.0" y="18.0">SP = 2</text><text class="ts" x="283" y="248" text-anchor="middle">posición en el ranking (1 = peor, N = mejor) · N = 10</text></svg><figcaption>Ranking lineal: rectas que pasan por (1; 2 − SP) y (N; SP). Más SP, más pendiente, más presión.</figcaption></figure>
+<p><b>Aplicado al ejemplo 1</b> con SP = 2 y N = 5 (ranking: sol4 = 1, sol2 = 2, sol1 = 3, sol3 = 4, sol5 = 5): LR = 0 · 0,5 · 1 · 1,5 · 2, probabilidades LR/N = 0 · 0,1 · 0,2 · 0,3 · 0,4. El mejor baja de 0,62 a 0,40: el ranking <b>bajó la presión</b>.</p>
+<div class="box warn"><b>Erratas en la diapositiva del ranking lineal</b>
+Para SP = 1 escribe "(2−1) + 2(1−1)(pos−1)/(N−1) = 1 + 1 = 1": el segundo término vale 0, así que es <b>1 + 0 = 1</b>. Para SP = 2 escribe "(1−2) + …": el primer término es <b>(2 − 2) = 0</b>, por eso queda 2(pos−1)/(N−1).</div>
+<h4>Ranking no lineal</h4>
+<ul><li>Igual que el lineal (evaluar, rankear, asignar fitness por posición, usar otro método), pero la asignación de fitness <b>no es lineal</b> (curva tipo exponencial: casi todo el fitness se concentra en los mejores puestos).</li>
+<li>También tiene un factor SP, con <b>1 ≤ SP ≤ N − 2</b> y <b>0 ≤ LR(pos) ≤ SP</b>.</li>
+<li>En general aplica <b>más</b> presión que el lineal.</li></ul>
+<div class="box ok"><b>Para recordar</b> Ranking lineal → <b>disminuye</b> la presión de selección (corrige el crowding). Ranking no lineal → <b>aumenta</b> la presión de selección (corrige la convergencia lenta).</div>
+
+<h3>8.7 Comparación de los operadores de selección</h3>
+<table><tr><th>Operador</th><th>Bias</th><th>Spread</th><th>Eficiencia</th><th>Números aleatorios</th></tr>
+<tr><td>Ruleta con pesos</td><td>Grande</td><td>[0, n] máximo</td><td>O(n log n)</td><td>Uno por tiro</td></tr>
+<tr><td>Torneo</td><td>Grande</td><td>[0, n] máximo</td><td>O(n)</td><td>Dos por individuo (k = 2)</td></tr>
+<tr><td><b>SUS</b></td><td><b>Cero</b></td><td><b>Mínimo</b> [⌊npᵢ⌋, ⌈npᵢ⌉]</td><td><b>O(n)</b></td><td><b>Uno solo</b></td></tr>
+<tr><td>Ranking</td><td colspan="4">Reescala el fitness; hereda bias y spread del método que se use después (SUS o ruleta). Controla la presión con SP</td></tr></table>
+
+<div class="lab" id="labSel"><h4>🧪 Laboratorio: ruleta, SUS y torneo</h4>
+<div class="row"><label for="selF">Fitness</label><input type="text" id="selF" value="0.50, -0.25, -0.50, 0.20, -1.00"></div>
+<div class="row"><label for="selE">ε</label><input type="number" id="selE" value="0.1" step="0.05" style="width:80px"><label for="selN">tiros n</label><input type="number" id="selN" value="5" min="1" max="1000" style="width:80px"><label for="selK">k (torneo)</label><input type="number" id="selK" value="2" min="2" max="10" style="width:70px"></div>
+<div class="row"><button class="btn p" type="button" data-sel="ruleta">Tirar ruleta</button><button class="btn" type="button" data-sel="sus">SUS</button><button class="btn" type="button" data-sel="torneo">Torneo</button><button class="btn" type="button" data-sel="x100">Ruleta × 1000 corridas</button></div>
+<div id="selOut" class="out"></div></div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué en la ruleta se calcula F − m + ε y no solo F − m?</summary><div>Porque con F − m el peor individuo quedaría con peso 0 y nunca podría ser elegido. El ε asegura que todos tengan alguna probabilidad.</div></details>
+<details><summary>¿Cuántos números aleatorios necesita SUS para elegir 100 individuos?</summary><div>Uno solo: p ∈ [0, 1/100]. Los demás punteros se obtienen sumando 1/100.</div></details>
+<details><summary>¿Qué parámetro controla la presión de selección en el torneo? ¿Y en el ranking?</summary><div>En el torneo, el tamaño k. En el ranking, el factor SP.</div></details>
+<details><summary>¿Qué medida describe el peor caso de cuántas veces puede salir un individuo?</summary><div>El spread.</div></details>
+</div>
+</section>
+
+<section id="s9" data-tema="xo">
+<h2>9. Operadores de cruzamiento (crossover)</h2>
+<h3>9.1 La idea</h3>
+<ul><li>Extraer y <b>preservar parte del material genético de los padres</b> en cada hijo y, a la vez, <b>combinar</b> los genes de ambos para producir una camada (<i>offspring</i>) de mejor calidad.</li>
+<li>Se aplica <b>inmediatamente después de la selección</b>, <b>por parejas</b>, sobre la población seleccionada. Si la cantidad es impar, un individuo pasa sin cambios.</li>
+<li>Es el principal responsable de la <b>explotación</b> del espacio de búsqueda, hecha "inteligentemente": opera sobre padres elegidos por sus buenas características.</li></ul>
+<table><tr><th>Operador</th><th>Codificación</th><th>Qué hace</th><th>Inciso</th></tr>
+<tr><td>Single Point</td><td>Binaria, entera, real</td><td>1 corte, intercambia las colas</td><td><a href="#s9-1p">9.2</a></td></tr>
+<tr><td>Single Point con Shuffle</td><td>Binaria, entera, real</td><td>Permuta, corta, des-permuta: corrige el bias</td><td><a href="#s9-shuf">9.3</a></td></tr>
+<tr><td>Two-Point / Multi-Point</td><td>Binaria, entera, real</td><td>2 o más cortes, secciones alternadas</td><td><a href="#s9-mp">9.4</a></td></tr>
+<tr><td>Uniform / Scattered</td><td>Binaria, entera, real</td><td>Máscara binaria gen por gen</td><td><a href="#s9-uni">9.5</a></td></tr>
+<tr><td>Aritmético</td><td><b>Real</b></td><td>Combinación lineal con un solo r</td><td><a href="#s9-ari">9.6</a></td></tr>
+<tr><td>Cube</td><td><b>Real</b></td><td>Combinación con un rᵢ por coordenada</td><td><a href="#s9-cube">9.7</a></td></tr>
+<tr><td>Partial Map (PMX)</td><td><b>Orden</b> (permutaciones)</td><td>2 cortes; completa siguiendo al otro padre</td><td><a href="#s9-pmx">9.8</a></td></tr>
+<tr><td>Order Based</td><td><b>Orden</b> (permutaciones)</td><td>Máscara; completa siguiendo al otro padre</td><td><a href="#s9-ox">9.9</a></td></tr></table>
+<div class="leyenda"><span class="la">gen del padre 1</span><span class="lb2">gen del padre 2</span><span class="lc">gen problemático o mutado</span></div>
+
+<h3 id="s9-1p">9.2 Single Point Crossover</h3>
+<ul><li>Recombina los genes de los padres para encontrar los más interesantes. Sirve para codificación <b>binaria, entera y real</b>.</li>
+<li>Se elige <b>1 punto de corte al azar</b>. El primer hijo toma la primera sección del primer padre (del inicio al corte) y la segunda sección del otro padre (del corte al final). El segundo hijo, al revés.</li></ul>
+<div class="cromwrap">
+<div class="crom"><span class="lb">P1</span><div class="genes"><span class="g a">2.1</span><span class="g a">9.3</span><span class="g a">7.4</span><span class="g a cut">1.8</span><span class="g a">5.2</span><span class="g a">3.3</span><span class="g a">0.5</span><span class="g a">6.1</span><span class="g a">4.8</span><span class="g a">8.3</span></div></div>
+<div class="crom"><span class="lb">P2</span><div class="genes"><span class="g b">4.2</span><span class="g b">1.6</span><span class="g b">2.7</span><span class="g b cut">6.4</span><span class="g b">5.9</span><span class="g b">3.1</span><span class="g b">9.2</span><span class="g b">7.7</span><span class="g b">0.3</span><span class="g b">8.5</span></div></div>
+<div class="crom"><span class="lb">C1</span><div class="genes"><span class="g a">2.1</span><span class="g a">9.3</span><span class="g a">7.4</span><span class="g a cut">1.8</span><span class="g b">5.9</span><span class="g b">3.1</span><span class="g b">9.2</span><span class="g b">7.7</span><span class="g b">0.3</span><span class="g b">8.5</span></div></div>
+<div class="crom"><span class="lb">C2</span><div class="genes"><span class="g b">4.2</span><span class="g b">1.6</span><span class="g b">2.7</span><span class="g b cut">6.4</span><span class="g a">5.2</span><span class="g a">3.3</span><span class="g a">0.5</span><span class="g a">6.1</span><span class="g a">4.8</span><span class="g a">8.3</span></div></div>
+<figcaption>Corte después del 4.º gen (ejemplo de clase).</figcaption></div>
+<p><b>Efecto geométrico:</b> los hijos son <b>vértices del cubo</b> n-dimensional definido por los padres. Por ejemplo, en 3D: (x₁, y₁, z₁) y (x₂, y₂, z₂) → (x₁, y₁, z₂) y (x₂, y₂, z₁). Como cada coordenada viene de un padre, si los padres respetaban los límites (matriz de <i>bounds</i>), los hijos también.</p>
+<p><b>Problema (bias):</b> tiene tendencia a cortar en las <b>secciones centrales</b> más que en los bordes; los genes de las puntas tienden a viajar siempre juntos.</p>
+
+<h3 id="s9-shuf">9.3 Single Point con Shuffle</h3>
+<p>Para repartir los cortes de forma pareja entre todas las coordenadas:</p>
+<ol><li>Elegir los padres.</li><li>Determinar una <b>permutación al azar</b>.</li><li>Aplicar la <b>misma</b> permutación a ambos padres.</li><li>Aplicar el crossover elegido (acá, single point).</li><li>Aplicar la <b>permutación inversa</b> a ambos hijos.</li></ol>
+<p>Permutación de clase: <span class="mono">7 4 10 8 2 9 5 3 6 1</span> (el gen de la posición i va a la posición perm(i): el 1.º va a la 7.ª, el 2.º a la 4.ª…).</p>
+<div class="cromwrap">
+<div class="crom"><span class="lb">P1'</span><div class="genes"><span class="g a">8.3</span><span class="g a">5.2</span><span class="g a">6.1</span><span class="g a cut">9.3</span><span class="g a">0.5</span><span class="g a">4.8</span><span class="g a">2.1</span><span class="g a">1.8</span><span class="g a">3.3</span><span class="g a">7.4</span></div></div>
+<div class="crom"><span class="lb">P2'</span><div class="genes"><span class="g b">8.5</span><span class="g b">5.9</span><span class="g b">7.7</span><span class="g b cut">1.6</span><span class="g b">9.2</span><span class="g b">0.3</span><span class="g b">4.2</span><span class="g b">6.4</span><span class="g b">3.1</span><span class="g b">2.7</span></div></div>
+<div class="crom"><span class="lb">C1'</span><div class="genes"><span class="g a">8.3</span><span class="g a">5.2</span><span class="g a">6.1</span><span class="g a cut">9.3</span><span class="g b">9.2</span><span class="g b">0.3</span><span class="g b">4.2</span><span class="g b">6.4</span><span class="g b">3.1</span><span class="g b">2.7</span></div></div>
+<div class="crom"><span class="lb">C2'</span><div class="genes"><span class="g b">8.5</span><span class="g b">5.9</span><span class="g b">7.7</span><span class="g b cut">1.6</span><span class="g a">0.5</span><span class="g a">4.8</span><span class="g a">2.1</span><span class="g a">1.8</span><span class="g a">3.3</span><span class="g a">7.4</span></div></div>
+<figcaption>Padres permutados y cruzados con un corte después del 4.º gen.</figcaption></div>
+<div class="cromwrap">
+<div class="crom"><span class="lb">C1</span><div class="genes"><span class="g b">4.2</span><span class="g a">9.3</span><span class="g b">2.7</span><span class="g b">6.4</span><span class="g a">5.2</span><span class="g b">3.1</span><span class="g b">9.2</span><span class="g a">6.1</span><span class="g b">0.3</span><span class="g a">8.3</span></div></div>
+<div class="crom"><span class="lb">C2</span><div class="genes"><span class="g a">2.1</span><span class="g b">1.6</span><span class="g a">7.4</span><span class="g a">1.8</span><span class="g b">5.9</span><span class="g a">3.3</span><span class="g a">0.5</span><span class="g b">7.7</span><span class="g a">4.8</span><span class="g b">8.5</span></div></div>
+<figcaption>Hijos después de la permutación inversa: los genes de cada padre quedan <b>salteados</b>, no en bloque.</figcaption></div>
+
+<h3 id="s9-mp">9.4 Two-Point y Multi-Point Crossover</h3>
+<ul><li><b>Two-Point:</b> se toman dos puntos de corte.</li>
+<li><b>Multi-Point:</b> la cantidad de cortes se elige al azar.</li>
+<li>En todos los casos cada hijo se arma con <b>secciones alternadas</b> de uno y otro padre.</li>
+<li>El efecto de todas las variantes es similar, pero <b>Single-Point tarda mucho más</b> en lograr el mismo efecto: necesita que los cortes salgan en los lugares precisos en el momento justo, lo cual es poco probable.</li></ul>
+<div class="cromwrap">
+<div class="crom"><span class="lb">C1</span><div class="genes"><span class="g a">2.1</span><span class="g a">9.3</span><span class="g a cut">7.4</span><span class="g b">6.4</span><span class="g b">5.9</span><span class="g b">3.1</span><span class="g b cut">9.2</span><span class="g a">6.1</span><span class="g a">4.8</span><span class="g a">8.3</span></div></div>
+<div class="crom"><span class="lb">C2</span><div class="genes"><span class="g b">4.2</span><span class="g b">1.6</span><span class="g b cut">2.7</span><span class="g a">1.8</span><span class="g a">5.2</span><span class="g a">3.3</span><span class="g a cut">0.5</span><span class="g b">7.7</span><span class="g b">0.3</span><span class="g b">8.5</span></div></div>
+<figcaption>Two-Point con los mismos padres, cortes después del 3.º y del 7.º gen (ejemplo propio).</figcaption></div>
+
+<h3 id="s9-uni">9.5 Uniform o Scattered Crossover</h3>
+<ul><li>Sirve para codificación <b>binaria, entera y real</b>. También se lo conoce como <b>Discrete Recombination</b>.</li>
+<li>Se crea una <b>máscara binaria al azar</b>, una posición por gen. Cada posición del hijo se toma de un padre o del otro según la máscara; el segundo hijo se arma de forma simétrica.</li></ul>
+<div class="cromwrap">
+<div class="crom"><span class="lb">P1</span><div class="genes"><span class="g a">2.1</span><span class="g a">9.3</span><span class="g a">7.4</span><span class="g a">1.8</span><span class="g a">5.2</span><span class="g a">3.3</span><span class="g a">0.5</span><span class="g a">6.1</span><span class="g a">4.8</span><span class="g a">8.3</span></div></div>
+<div class="crom"><span class="lb">P2</span><div class="genes"><span class="g b">4.2</span><span class="g b">1.6</span><span class="g b">2.7</span><span class="g b">6.4</span><span class="g b">5.9</span><span class="g b">3.1</span><span class="g b">9.2</span><span class="g b">7.7</span><span class="g b">0.3</span><span class="g b">8.5</span></div></div>
+<div class="crom"><span class="lb">Máscara</span><div class="genes"><span class="g m">1</span><span class="g m">0</span><span class="g m">0</span><span class="g m">1</span><span class="g m">1</span><span class="g m">0</span><span class="g m">1</span><span class="g m">0</span><span class="g m">1</span><span class="g m">1</span></div></div>
+<div class="crom"><span class="lb">C1</span><div class="genes"><span class="g a">2.1</span><span class="g b">1.6</span><span class="g b">2.7</span><span class="g a">1.8</span><span class="g a">5.2</span><span class="g b">3.1</span><span class="g a">0.5</span><span class="g b">7.7</span><span class="g a">4.8</span><span class="g a">8.3</span></div></div>
+<div class="crom"><span class="lb">C2</span><div class="genes"><span class="g b">4.2</span><span class="g a">9.3</span><span class="g a">7.4</span><span class="g b">6.4</span><span class="g b">5.9</span><span class="g a">3.3</span><span class="g b">9.2</span><span class="g a">6.1</span><span class="g b">0.3</span><span class="g b">8.5</span></div></div>
+<figcaption>Donde la máscara tiene 1, C1 copia de P1; donde tiene 0, copia de P2. C2 hace lo contrario.</figcaption></div>
+<div class="box warn"><b>El texto y el ejemplo de la diapositiva dicen cosas opuestas</b>
+El texto de la clase 8b dice que C1 toma de P1 los lugares marcados con <b>0</b> y de P2 los marcados con <b>1</b>. Pero en los dos ejemplos de clase (6c y 8b) C1 toma de <b>P1 donde hay 1</b>. Es solo una convención: lo importante es que cada hijo toma un padre donde la máscara dice una cosa y el otro donde dice la otra. Si te dan un ejercicio, aclará qué convención usás.</div>
+<p>Ejemplo de la clase 6c (enteros), misma convención:</p>
+<div class="cromwrap">
+<div class="crom"><span class="lb">Padre I</span><div class="genes"><span class="g a">1</span><span class="g a">5</span><span class="g a">3</span><span class="g a">2</span><span class="g a">8</span><span class="g a">9</span><span class="g a">4</span></div></div>
+<div class="crom"><span class="lb">Padre II</span><div class="genes"><span class="g b">2</span><span class="g b">2</span><span class="g b">0</span><span class="g b">3</span><span class="g b">4</span><span class="g b">5</span><span class="g b">1</span></div></div>
+<div class="crom"><span class="lb">Máscara</span><div class="genes"><span class="g m">1</span><span class="g m">0</span><span class="g m">0</span><span class="g m">1</span><span class="g m">0</span><span class="g m">1</span><span class="g m">1</span></div></div>
+<div class="crom"><span class="lb">Hijo I</span><div class="genes"><span class="g a">1</span><span class="g b">2</span><span class="g b">0</span><span class="g a">2</span><span class="g b">4</span><span class="g a">9</span><span class="g a">4</span></div></div>
+<div class="crom"><span class="lb">Hijo II</span><div class="genes"><span class="g b">2</span><span class="g a">5</span><span class="g a">3</span><span class="g b">3</span><span class="g a">8</span><span class="g b">5</span><span class="g b">1</span></div></div>
+</div>
+
+<h3 id="s9-ari">9.6 Arith Crossover (aritmético)</h3>
+<p>Solo para codificación <b>real</b>. Se elige <b>un único</b> r ∈ (0, 1) al azar:</p>
+<div class="f">C₁ = r·(P₂ − P₁) + P₁ &nbsp;&nbsp;&nbsp;&nbsp; C₂ = r·(P₁ − P₂) + P₂</div>
+<p>Como r es el mismo para todas las coordenadas, los hijos caen <b>sobre el segmento que une a los padres</b> (C₁ a una fracción r del camino desde P₁ hacia P₂, C₂ a la misma fracción desde P₂ hacia P₁). Además C₁ + C₂ = P₁ + P₂.</p>
+<p>Ejemplo propio: P₁ = (0,6; −0,4), P₂ = (0; 0,5), r = 0,25 → C₁ = (0,45; −0,175) y C₂ = (0,15; 0,275).</p>
+
+<h3 id="s9-cube">9.7 Cube Crossover</h3>
+<p>Solo para codificación <b>real</b>. Igual que el aritmético pero con <b>un rᵢ distinto por coordenada</b>:</p>
+<div class="f">C₁ = R .* (P₂ − P₁) + P₁ &nbsp;&nbsp;&nbsp;&nbsp; C₂ = R .* (P₁ − P₂) + P₂, &nbsp;&nbsp; R = (r₁, …, rₙ), rᵢ ∈ (0, 1)<small>.* es el producto coordenada a coordenada</small></div>
+<p>Los hijos pueden caer <b>en cualquier punto del cubo</b> (hiperrectángulo) cuyos vértices opuestos son los padres. Ejemplo propio: R = (0,25; 0,8) → C₁ = (0,45; 0,32) y C₂ = (0,15; −0,22).</p>
+<figure class="diag"><svg viewBox="0 0 640 300" role="img" aria-label="Zonas donde caen los hijos según el operador"><line class="grid-l" x1="103.2" y1="12" x2="103.2" y2="274"/><line class="grid-l" x1="40" y1="153.9" x2="440" y2="153.9"/><text class="ts" x="444" y="157.9">x</text><text class="ts" x="108.2" y="22">y</text><rect x="103.2" y="44.8" width="252.6" height="196.5" style="fill:var(--okbg);stroke:var(--acc2);stroke-width:1.5" class="dash"/><line class="la" x1="355.8" y1="241.2" x2="103.2" y2="44.8"/><circle cx="355.8" cy="241.2" r="6" style="fill:var(--ink);stroke:var(--ink);stroke-width:2"/><text x="365.8" y="257.2" text-anchor="start" class="tb">P₁ (0,6; −0,4)</text><circle cx="103.2" cy="44.8" r="6" style="fill:var(--ink);stroke:var(--ink);stroke-width:2"/><text x="93.2" y="34.8" text-anchor="end" class="tb">P₂ (0; 0,5)</text><circle cx="355.8" cy="44.8" r="6" style="fill:var(--card);stroke:var(--warn);stroke-width:2"/><text x="365.8" y="36.8" text-anchor="start" class="tb">Single Point</text><circle cx="103.2" cy="241.2" r="6" style="fill:var(--card);stroke:var(--warn);stroke-width:2"/><text x="93.2" y="257.2" text-anchor="end" class="tb">Single Point</text><circle cx="292.6" cy="192.1" r="5" style="fill:var(--acc);stroke:var(--acc);stroke-width:2"/><text x="302.6" y="196.1" text-anchor="start" class="tb">aritmético</text><circle cx="166.3" cy="93.9" r="5" style="fill:var(--acc);stroke:var(--acc);stroke-width:2"/><text x="156.3" y="97.9" text-anchor="end" class="tb">aritmético</text><circle cx="292.6" cy="84.0" r="5" style="fill:var(--acc2);stroke:var(--acc2);stroke-width:2"/><text x="302.6" y="88.0" text-anchor="start" class="tb">Cube</text><circle cx="166.3" cy="201.9" r="5" style="fill:var(--acc2);stroke:var(--acc2);stroke-width:2"/><text x="156.3" y="205.9" text-anchor="end" class="tb">Cube</text><rect x="470" y="70" width="14" height="10" style="fill:var(--okbg);stroke:var(--acc2)"/><text x="490" y="80" class="ts">zona del Cube</text><line class="la" x1="470" y1="105" x2="484" y2="105"/><text x="490" y="109" class="ts">zona del aritmético</text><circle cx="477" cy="135" r="5" style="fill:var(--card);stroke:var(--warn);stroke-width:2"/><text x="490" y="139" class="ts">vértices: Single Point</text></svg><figcaption>Dónde pueden caer los hijos de P₁ y P₂: <b>Single Point</b> solo en los vértices del rectángulo, <b>aritmético</b> sobre la diagonal (segmento), <b>Cube</b> en cualquier punto interior.</figcaption></figure>
+
+<h3 id="s9-pmx">9.8 Partial Map Crossover (PMX)</h3>
+<p>Para <b>codificación basada en el orden</b> (permutaciones, como el TSP: cada valor aparece exactamente una vez). Por qué hace falta un operador especial: si se cruza una permutación con Single Point, aparecen valores repetidos y faltan otros.</p>
+<div class="cromwrap">
+<div class="crom"><span class="lb">Single Point</span><div class="genes"><span class="g a">2</span><span class="g a">9</span><span class="g a">7</span><span class="g a">1</span><span class="g a">5</span><span class="g a cut">3</span><span class="g c">9</span><span class="g c">7</span><span class="g c">1</span><span class="g b">8</span></div></div>
+<figcaption>Single Point sobre las permutaciones de abajo (corte después del 6.º gen): 9, 7 y 1 repetidos, faltan 10, 6 y 4. No es una solución válida.</figcaption></div>
+<ol><li>Elegir los 2 padres y <b>2 puntos de corte</b> al azar.</li>
+<li>Para el primer hijo, copiar las <b>secciones alternadas del primer padre</b> (la primera y la tercera), con los mismos valores y en la misma posición.</li>
+<li>Completar los lugares vacíos <b>siguiendo el orden del segundo padre</b>, salteando los valores ya ubicados (para no repetir).</li></ol>
+<div class="cromwrap">
+<div class="crom"><span class="lb">P1</span><div class="genes"><span class="g a">2</span><span class="g a">9</span><span class="g a cut">7</span><span class="g a">1</span><span class="g a">5</span><span class="g a">3</span><span class="g a cut">10</span><span class="g a">6</span><span class="g a">4</span><span class="g a">8</span></div></div>
+<div class="crom"><span class="lb">P2</span><div class="genes"><span class="g b">4</span><span class="g b">10</span><span class="g b cut">2</span><span class="g b">6</span><span class="g b">5</span><span class="g b">3</span><span class="g b cut">9</span><span class="g b">7</span><span class="g b">1</span><span class="g b">8</span></div></div>
+<div class="crom"><span class="lb">C1 (paso 2)</span><div class="genes"><span class="g a">2</span><span class="g a">9</span><span class="g a cut">7</span><span class="g e">–</span><span class="g e">–</span><span class="g e">–</span><span class="g e cut">–</span><span class="g a">6</span><span class="g a">4</span><span class="g a">8</span></div></div>
+<div class="crom"><span class="lb">C1</span><div class="genes"><span class="g a">2</span><span class="g a">9</span><span class="g a cut">7</span><span class="g b">10</span><span class="g b">5</span><span class="g b">3</span><span class="g b cut">1</span><span class="g a">6</span><span class="g a">4</span><span class="g a">8</span></div></div>
+<figcaption>Faltan 1, 5, 3 y 10. Recorriendo P2 (4, 10, 2, 6, 5, 3, 9, 7, 1, 8) y salteando los que ya están, aparecen en el orden 10, 5, 3, 1.</figcaption></div>
+<div class="cromwrap">
+<div class="crom"><span class="lb">C2</span><div class="genes"><span class="g b">4</span><span class="g b">10</span><span class="g b cut">2</span><span class="g a">9</span><span class="g a">5</span><span class="g a">3</span><span class="g a cut">6</span><span class="g b">7</span><span class="g b">1</span><span class="g b">8</span></div></div>
+<figcaption>C2 de forma simétrica (ejemplo propio): secciones 1 y 3 de P2 y el resto siguiendo el orden de P1 (9, 5, 3, 6).</figcaption></div>
+<p>Así cada hijo conserva parte de un padre <b>exacta en posición y orden</b>, y del otro padre <b>el orden de aparición</b> de las variables restantes.</p>
+<div class="box warn"><b>PMX en otros libros</b>
+En la bibliografía clásica (Goldberg) el PMX completa los huecos con un <b>mapeo</b> entre los valores de la sección del medio, no siguiendo el orden del otro padre. Para el parcial usá el procedimiento de la cátedra, el de arriba.</div>
+
+<h3 id="s9-ox">9.9 Order Based Crossover</h3>
+<ul><li>Para codificación basada en el <b>orden</b> (permutaciones).</li>
+<li>Similar a PMX, pero en lugar de 2 cortes usa una <b>máscara binaria al azar</b> que indica qué coordenadas se toman de cada padre.</li>
+<li>Elimina el <b>bias</b> de cortar más en las secciones centrales que en los bordes (es a PMX lo que Uniform es a Single Point).</li></ul>
+<div class="cromwrap">
+<div class="crom"><span class="lb">P1</span><div class="genes"><span class="g a">2</span><span class="g a">9</span><span class="g a">7</span><span class="g a">1</span><span class="g a">5</span><span class="g a">3</span><span class="g a">10</span><span class="g a">6</span><span class="g a">4</span><span class="g a">8</span></div></div>
+<div class="crom"><span class="lb">P2</span><div class="genes"><span class="g b">4</span><span class="g b">10</span><span class="g b">2</span><span class="g b">6</span><span class="g b">5</span><span class="g b">3</span><span class="g b">9</span><span class="g b">7</span><span class="g b">1</span><span class="g b">8</span></div></div>
+<div class="crom"><span class="lb">Máscara</span><div class="genes"><span class="g m">1</span><span class="g m">0</span><span class="g m">0</span><span class="g m">1</span><span class="g m">1</span><span class="g m">0</span><span class="g m">1</span><span class="g m">0</span><span class="g m">1</span><span class="g m">1</span></div></div>
+<div class="crom"><span class="lb">C1 (paso 1)</span><div class="genes"><span class="g a">2</span><span class="g e">–</span><span class="g e">–</span><span class="g a">1</span><span class="g a">5</span><span class="g e">–</span><span class="g a">10</span><span class="g e">–</span><span class="g a">4</span><span class="g a">8</span></div></div>
+<div class="crom"><span class="lb">C1</span><div class="genes"><span class="g a">2</span><span class="g b">6</span><span class="g b">3</span><span class="g a">1</span><span class="g a">5</span><span class="g b">9</span><span class="g a">10</span><span class="g b">7</span><span class="g a">4</span><span class="g a">8</span></div></div>
+<figcaption>Donde la máscara tiene 1 se copia P1. Faltan 9, 7, 3 y 6: siguiendo el orden de P2 aparecen 6, 3, 9, 7 y se ubican en los huecos.</figcaption></div>
+<div class="cromwrap">
+<div class="crom"><span class="lb">C2</span><div class="genes"><span class="g b">4</span><span class="g a">2</span><span class="g a">7</span><span class="g b">6</span><span class="g b">5</span><span class="g a">3</span><span class="g b">9</span><span class="g a">10</span><span class="g b">1</span><span class="g b">8</span></div></div>
+<figcaption>C2 de forma simétrica (ejemplo propio): donde hay 1 se copia P2; los faltantes (10, 2, 3, 7) siguen el orden de P1: 2, 7, 3, 10.</figcaption></div>
+
+<div class="lab" id="labXO"><h4>🧪 Laboratorio: probá los cruzamientos</h4>
+<div class="row"><label for="xoOp">Operador</label><select id="xoOp">
+<option value="1p">Single Point</option><option value="2p">Two-Point</option><option value="shuf">Single Point con Shuffle</option><option value="uni">Uniform</option><option value="ari">Aritmético</option><option value="cube">Cube</option><option value="pmx">Partial Map (PMX)</option><option value="ox">Order Based</option></select>
+<button class="btn p" type="button" id="xoGo">Cruzar al azar</button></div>
+<div class="row"><label for="xoP1">P1</label><input type="text" id="xoP1" value="2.1 9.3 7.4 1.8 5.2 3.3 0.5 6.1 4.8 8.3"></div>
+<div class="row"><label for="xoP2">P2</label><input type="text" id="xoP2" value="4.2 1.6 2.7 6.4 5.9 3.1 9.2 7.7 0.3 8.5"></div>
+<div id="xoOut"></div></div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué operadores sirven solo para codificación real?</summary><div>El aritmético y el Cube, porque calculan valores intermedios entre los padres.</div></details>
+<details><summary>¿Por qué no se puede usar Single Point para el TSP?</summary><div>Porque al juntar pedazos de dos permutaciones aparecen ciudades repetidas y faltan otras. Para permutaciones se usan PMX u Order Based.</div></details>
+<details><summary>¿Qué problema corrige el Shuffle y qué problema corrige Order Based frente a PMX?</summary><div>El mismo: el bias de cortar más en las secciones centrales que en los bordes.</div></details>
+<details><summary>¿Qué diferencia hay entre aritmético y Cube?</summary><div>El aritmético usa un único r para todas las coordenadas (hijos sobre el segmento entre padres); Cube usa un rᵢ por coordenada (hijos en cualquier punto del cubo).</div></details>
+</div>
+</section>
+
+<section id="s10" data-tema="mut">
+<h2>10. Mutación</h2>
+<h3>10.1 La idea</h3>
+<ul><li>Reproduce las <b>mutaciones genéticas</b> de cada generación (errores de copia o de transferencia del ADN), una de las principales herramientas de la evolución natural.</li>
+<li>Se aplica <b>inmediatamente después del crossover</b>, a un <b>porcentaje bajo</b> de la población.</li>
+<li>Su objetivo principal es la <b>exploración</b> del espacio de búsqueda: llegar a áreas posiblemente no abordadas y cercanas a una buena solución.</li></ul>
+
+<h3>10.2 Step Mutation (Uniform Mutation)</h3>
+<p>Cambia una coordenada elegida al azar por un valor al azar dentro de los límites de esa coordenada. La distribución de probabilidad que se usa es <b>uniforme</b>.</p>
+<ol><li>Elegir <b>una coordenada al azar</b> del individuo seleccionado.</li>
+<li>Elegir una <b>dirección de cambio</b>: hacia el máximo o hacia el mínimo.</li>
+<li>Elegir un <b>valor al azar entre el valor actual y el extremo</b> seleccionado.</li></ol>
+<div class="cromwrap">
+<div class="crom"><span class="lb">Individuo</span><div class="genes"><span class="g ">1</span><span class="g ">5</span><span class="g ">3</span><span class="g ">2</span><span class="g c">8</span><span class="g ">9</span><span class="g ">4</span></div></div>
+<div class="crom"><span class="lb">Mutado</span><div class="genes"><span class="g ">1</span><span class="g ">5</span><span class="g ">3</span><span class="g ">2</span><span class="g c">4.1</span><span class="g ">9</span><span class="g ">4</span></div></div>
+<figcaption>Límites [1, 10]. Se eligió la 5.ª coordenada (8) y la dirección hacia el mínimo (1): el nuevo valor sale al azar entre 1 y 8, y salió 4,1.</figcaption></div>
+<p>En el <a href="#s11">ejemplo completo</a> se aplica a C4 = (0,60; −0,20): coordenada 1, dirección hacia arriba (límite 1,0), nuevo valor entre 0,60 y 1,0 → <b>(0,90; −0,20)</b>.</p>
+<div class="box warn"><b>Dos nombres, un procedimiento</b>
+La clase 6c lo llama <b>Step Mutation</b> y la clase 6d (ejemplo) <b>Uniform Mutation</b>. El procedimiento descripto es el mismo. Como el nuevo valor está entre el actual y un límite, el mutado <b>siempre respeta los bounds</b>.</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué la mutación se aplica a un porcentaje bajo de la población?</summary><div>Porque mutar demasiado destruye la información buena que vienen armando la selección y el cruzamiento (y es una de las causas de pérdida de diversidad genética útil); el algoritmo se volvería una búsqueda al azar.</div></details>
+<details><summary>¿Puede la Step Mutation sacar a un individuo de los límites?</summary><div>No: el nuevo valor se elige entre el valor actual y uno de los límites de esa coordenada.</div></details>
+</div>
+</section>
+
+<section id="s11" data-tema="ej">
+<h2>11. Ejemplo completo resuelto (AG simple)</h2>
+<div class="grid">
+<div class="card"><h4>Problema</h4><span class="mono">max F(x, y) = x + y</span><br>con −1 ≤ x, y ≤ 1 (óptimo en (1, 1), F = 2)</div>
+<div class="card"><h4>Parámetros</h4>Población 5 · 4 generaciones · ruleta con pesos · Uniform Crossover · Uniform Mutation · 1 mutado · sin elitismo</div>
+</div>
+<h3>11.1 Población inicial y evaluación</h3>
+<table><tr><th>Sol.</th><th>(x, y)</th><th class="c">F</th></tr>
+<tr><td>S1</td><td>(0,00; 0,50)</td><td class="c">0,50</td></tr><tr><td>S2</td><td>(−0,50; 0,25)</td><td class="c">−0,25</td></tr><tr><td>S3</td><td>(−0,30; −0,20)</td><td class="c">−0,50</td></tr><tr><td>S4</td><td>(0,60; −0,40)</td><td class="c">0,20</td></tr><tr><td>S5</td><td>(−0,30; −0,70)</td><td class="c">−1,00</td></tr></table>
+<h3>11.2 Selección por ruleta</h3>
+<table><tr><th></th><th class="c">S1</th><th class="c">S2</th><th class="c">S3</th><th class="c">S4</th><th class="c">S5</th><th>Nota</th></tr>
+<tr><td>F</td><td class="c">0,50</td><td class="c">−0,25</td><td class="c">−0,50</td><td class="c">0,20</td><td class="c">−1,00</td><td>m = −1,00</td></tr>
+<tr><td>F<sub>a</sub> = F − m + ε</td><td class="c">1,60</td><td class="c">0,85</td><td class="c">0,60</td><td class="c">1,30</td><td class="c">0,10</td><td>ε = 0,1 · T = 4,45</td></tr>
+<tr><td>P = F<sub>a</sub>/T</td><td class="c">0,36</td><td class="c">0,19</td><td class="c">0,14</td><td class="c">0,29</td><td class="c">0,02</td><td></td></tr>
+<tr><td>Corte Cᵢ</td><td class="c">0,36</td><td class="c">0,55</td><td class="c">0,69</td><td class="c">0,98</td><td class="c">1,00</td><td></td></tr></table>
+<div class="cromwrap"><div class="ruleta"><div style="width:36%;background:#1f5fbf">S1</div><div style="width:19%;background:#0e8a6a">S2</div><div style="width:14%;background:#b45309">S3</div><div style="width:29%;background:#7c3aed">S4</div><div style="width:2%;background:#64748b"></div><span class="pt" style="left:95%" data-n="1"></span><span class="pt" style="left:23%" data-n="2"></span><span class="pt" style="left:61%" data-n="3"></span><span class="pt" style="left:89%" data-n="4"></span><span class="pt" style="left:65%" data-n="5"></span></div><div class="rulaxis"><span style="left:0">0</span><span style="left:36%">0,36</span><span style="left:55%">0,55</span><span style="left:69%">0,69</span><span style="left:98%">0,98</span></div>
+<figcaption>Tiros 0,95 · 0,23 · 0,61 · 0,89 · 0,65 → <b>S4, S1, S3, S4, S3</b>. S2 y S5 no salieron.</figcaption></div>
+<h3>11.3 Cruzamiento (Uniform)</h3>
+<p>Se arman parejas al azar; con número impar, uno pasa sin modificación.</p>
+<table><tr><th>Pareja</th><th>Padres</th><th>Hijos</th></tr>
+<tr><td>1</td><td>P1 = S4 = (0,60; −0,40) · P2 = S1 = (0,00; 0,50)</td><td>C1 = (0,60; 0,50) · C2 = (0,00; −0,40)</td></tr>
+<tr><td>2</td><td>P3 = S3 = (−0,30; −0,20) · P4 = S4 = (0,60; −0,40)</td><td>C3 = (−0,30; −0,40) · C4 = (0,60; −0,20)</td></tr>
+<tr><td>—</td><td>S3 = (−0,30; −0,20)</td><td>Pasa sin cambios</td></tr></table>
+<p>En las dos parejas la máscara fue (1, 0): el primer hijo toma x del primer padre e y del segundo.</p>
+<h3>11.4 Mutación</h3>
+<p>Se elige C4 = (0,60; −0,20), coordenada 1, dirección arriba (límite 1,0) y se toma 0,9 → <b>(0,90; −0,20)</b>.</p>
+<h3>11.5 Comparación entre generaciones</h3>
+<table><tr><th>Generación</th><th>Individuos (F)</th><th class="c">Mejor F</th><th class="c">F promedio</th></tr>
+<tr><td>1.ª</td><td>0,50 · −0,25 · −0,50 · 0,20 · −1,00</td><td class="c">0,50</td><td class="c">−0,21</td></tr>
+<tr><td>2.ª</td><td>(0,60; 0,50) 1,10 · (0,00; −0,40) −0,40 · (−0,30; −0,40) −0,70 · (0,90; −0,20) 0,70 · (−0,30; −0,20) −0,50</td><td class="c"><b>1,10</b></td><td class="c"><b>0,04</b></td></tr></table>
+<p class="sub">Los valores de la 2.ª generación los calculamos a partir de las diapositivas, que muestran la comparación en un gráfico.</p>
+<p>En una sola generación mejoró tanto el mejor individuo (0,50 → 1,10) como el promedio. Se repite hasta completar las 4 generaciones.</p>
+<div class="box warn"><b>Rótulo repetido en las diapositivas</b>
+En las diapositivas de cruzamiento y mutación del ejemplo sigue diciendo "Población luego de la Selección": es un copiar y pegar. Son la población luego del cruzamiento y luego de la mutación.</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué S5 casi no tenía chances en la ruleta?</summary><div>Porque era el peor (F = −1 = m): su fitness ajustado es solo ε = 0,1 y su probabilidad 0,02.</div></details>
+<details><summary>¿Qué pasa con el 5.º individuo seleccionado en el cruzamiento?</summary><div>Como hay 5 (impar), las parejas son 2 y el 5.º (S3) pasa sin modificación.</div></details>
+</div>
+</section>
+
+<!-- ================= MÓDULO 4 ================= -->
+
+<section id="s12" data-tema="todo">
+<h2>12. Pares que se confunden</h2>
+<table><tr><th>Concepto A</th><th>Concepto B</th><th>Cómo distinguirlos</th></tr>
+<tr><td>Secuencial</td><td>Paralelo</td><td>Una solución por paso (HC, SA, Tabu) vs una población (AG, PSO, ACO)</td></tr>
+<tr><td>Greedy</td><td>No greedy</td><td>Solo acepta mejoras (HC) vs acepta empeorar con alguna probabilidad (SA)</td></tr>
+<tr><td>Óptimo local</td><td>Óptimo global</td><td>Mejor en su vecindad vs mejor en todo el espacio de búsqueda</td></tr>
+<tr><td>Explotación</td><td>Exploración</td><td>Cruzamiento: mejorar lo bueno que ya hay vs mutación: ir a zonas nuevas</td></tr>
+<tr><td>Bias</td><td>Spread</td><td>Diferencia entre probabilidad y veces elegido (ideal 0) vs rango de veces que puede salir un individuo (peor caso)</td></tr>
+<tr><td>Presión de selección</td><td>Diversidad genética</td><td>Qué tanto se favorece al mejor vs qué proporción de la población no son copias. Mucha presión → poca diversidad</td></tr>
+<tr><td>Ruleta</td><td>SUS</td><td>Un número aleatorio por tiro (bias grande, spread [0, n]) vs uno solo con n punteros equiespaciados (bias 0, spread mínimo)</td></tr>
+<tr><td>Ranking lineal</td><td>Ranking no lineal</td><td>Baja la presión (1 ≤ SP ≤ 2) vs la sube (1 ≤ SP ≤ N − 2)</td></tr>
+<tr><td>k grande en torneo</td><td>k chico en torneo</td><td>Más presión de selección vs menos presión</td></tr>
+<tr><td>Single Point</td><td>Uniform</td><td>Un corte, bloques (bias al centro) vs máscara gen por gen</td></tr>
+<tr><td>Aritmético</td><td>Cube</td><td>Un r para todo (segmento) vs un rᵢ por coordenada (cubo)</td></tr>
+<tr><td>PMX</td><td>Order Based</td><td>Dos cortes vs máscara; ambos completan siguiendo el orden del otro padre</td></tr>
+<tr><td>Crowding</td><td>Convergencia lenta</td><td>Presión excesiva, el mejor copa la población vs presión baja, el mejor no recibe suficientes copias</td></tr>
+<tr><td>SA básico</td><td>SA completo</td><td>Aceptación según t y T₀ vs según T y ΔF</td></tr></table>
+</section>
+
+<section id="s13" data-tema="-">
+<h2>13. Fórmulas y procedimientos</h2>
+<table><tr><th>Tema</th><th>Fórmula / regla</th></tr>
+<tr><td>Hill Climbing</td><td>X = X₀ + ε·R, ε = rand()·ε<sub>max</sub>; si F(X) &gt; F(X₀) → X₀ = X</td></tr>
+<tr><td>Vector unitario</td><td>R = R / ‖R‖, ‖R‖ = √(Σ rᵢ²), con rᵢ = 2·rand() − 1</td></tr>
+<tr><td>Enfriamiento</td><td>T = T₀·e<sup>−μt</sup></td></tr>
+<tr><td>Aceptación SA</td><td>ΔF = F(X₀) − F(X), P = e<sup>−ΔF/T</sup>, acepto si s &lt; P</td></tr>
+<tr><td>Ruleta: ajuste</td><td>F<sub>a</sub> = F − m + ε, m = min F</td></tr>
+<tr><td>Ruleta: pesos y cortes</td><td>P = F<sub>a</sub>/T con T = ΣF<sub>a</sub>; Cᵢ = Σ<sub>k≤i</sub> P(Sₖ); sale Sᵢ si s ∈ [Cᵢ₋₁, Cᵢ]</td></tr>
+<tr><td>Fitness normalizado</td><td>F/(1 + F) para F &gt; 0, o (F − m)/(M − m)</td></tr>
+<tr><td>SUS</td><td>p ∈ [0, 1/n]; punteros p + k/n, k = 0 … n−1; spread [⌊npᵢ⌋, ⌈npᵢ⌉]</td></tr>
+<tr><td>Ranking lineal</td><td>LR(pos) = (2 − SP) + 2(SP − 1)(pos − 1)/(N − 1), 1 ≤ SP ≤ 2</td></tr>
+<tr><td>Ranking no lineal</td><td>1 ≤ SP ≤ N − 2, 0 ≤ LR ≤ SP</td></tr>
+<tr><td>Aritmético</td><td>C₁ = r(P₂ − P₁) + P₁, C₂ = r(P₁ − P₂) + P₂</td></tr>
+<tr><td>Cube</td><td>C₁ = R.*(P₂ − P₁) + P₁, C₂ = R.*(P₁ − P₂) + P₂</td></tr>
+<tr><td>Eficiencias</td><td>Ruleta O(n log n) · Torneo O(n) · SUS O(n)</td></tr>
+<tr><td>Porcentajes del AG simple</td><td>Élite 2 % · offspring 80 % · no cruzada 20 % (mutación 10 % + selección 10 %)</td></tr></table>
+<div class="box ok"><b>Antes del parcial</b>
+Repasá a mano: una ruleta completa (4 pasos), un SUS, un Single Point, un Uniform, un PMX y un Order Based. Son los ejercicios que más se pueden pedir.</div>
+<div class="cta"><a class="p" href="practica.html"><span class="ico">🎯</span><span>Ir a practicar<small>Elegí los temas que quieras</small></span></a></div>
+</section>
+
+</main>
+</div>
+<script src="assets/labs.js"></script>
+</body>
+</html>

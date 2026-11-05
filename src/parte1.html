@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heurística y Optimización · Guía completa</title>
+<meta name="description" content="Resumen de Algoritmos Genéticos y Optimización Heurística (UTN FRT): heurísticas, Hill Climbing, Simulated Annealing y Algoritmos Genéticos con selección, cruzamiento y mutación.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5fbf'/%3E%3Cpath d='M10 46 L24 28 L34 38 L46 16 L54 26' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/estilo.css">
+<script src="assets/comun.js"></script>
+</head>
+<body>
+<div class="wrap">
+<nav id="nav">
+<div class="navhead"><b>Heurística y Optimización · Guía completa</b>
+<div class="prog"><div class="pbar"><i id="pFill"></i></div><span id="pTxt"></span></div></div>
+
+<div class="mod"><div class="modh"><span class="mn">Inicio</span><span class="mi"></span></div>
+<a href="#s0">0. Cómo estudiar con esto</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 1 · Introducción</span><span class="mi"></span></div>
+<a href="#s1">1. ¿Qué es una heurística?</a>
+<a href="#s2">2. El problema de optimización</a>
+<a href="#s3">3. Clasificación de los métodos</a>
+<a href="#s4">4. Aplicaciones del GITIA</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 2 · Métodos secuenciales</span><span class="mi"></span></div>
+<a href="#s5">5. Hill Climbing</a>
+<a href="#s6">6. Simulated Annealing</a>
+<a href="#shs" class="star">★ Hill Climbing vs Annealing</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 3 · Algoritmos Genéticos</span><span class="mi"></span></div>
+<a href="#s7">7. AG: generalidades y esquema</a>
+<a href="#s8">8. Operadores de selección</a>
+<a class="sub2" href="#s8-med">8.2 Bias, spread, presión, diversidad</a>
+<a class="sub2" href="#s8-rul">8.3 Ruleta con pesos</a>
+<a class="sub2" href="#s8-tor">8.4 Torneo</a>
+<a class="sub2" href="#s8-sus">8.5 SUS</a>
+<a class="sub2" href="#s8-rank">8.6 Ranking lineal y no lineal</a>
+<a href="#s9">9. Operadores de cruzamiento</a>
+<a class="sub2" href="#s9-1p">9.2 Single Point</a>
+<a class="sub2" href="#s9-shuf">9.3 Single Point con Shuffle</a>
+<a class="sub2" href="#s9-mp">9.4 Two-Point y Multi-Point</a>
+<a class="sub2" href="#s9-uni">9.5 Uniform / Scattered</a>
+<a class="sub2" href="#s9-ari">9.6 Aritmético</a>
+<a class="sub2" href="#s9-cube">9.7 Cube</a>
+<a class="sub2" href="#s9-pmx">9.8 Partial Map (PMX)</a>
+<a class="sub2" href="#s9-ox">9.9 Order Based</a>
+<a href="#s10">10. Mutación</a>
+<a href="#s11">11. Ejemplo completo resuelto</a>
+</div>
+
+<div class="mod"><div class="modh"><span class="mn">Módulo 4 · Para el parcial</span><span class="mi"></span></div>
+<a href="#s12">12. Pares que se confunden</a>
+<a href="#s13">13. Fórmulas y procedimientos</a>
+</div>
+
+<div class="navbtns"><span>Practicar</span>
+<a class="nb p" href="practica.html">🎯 Práctica V/F y multiple choice</a>
+<a class="nb" href="practica.html?modo=examen">⏱ Modo examen</a></div>
+<button type="button" class="resetprog" id="resetProg">Reiniciar mi avance</button>
+</nav>
+
+<main>
+<div class="sbar" id="sbar" data-root="main" data-excluir="#historial,.gancho details>div"><label class="sbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="sq" type="search" placeholder="Buscar en la guía… (ej.: SUS, PMX, temperatura)" aria-label="Buscar en la guía" autocomplete="off"><kbd>/</kbd></label><span class="scount" id="scount" aria-live="polite"></span><button type="button" class="sbtn" id="sprev" aria-label="Resultado anterior">↑</button><button type="button" class="sbtn" id="snext" aria-label="Resultado siguiente">↓</button><button type="button" class="sbtn" id="sclear" aria-label="Borrar búsqueda">✕</button></div>
+<button class="theme-btn nav-btn" id="navBtn" type="button" aria-label="Mostrar u ocultar el índice" title="Mostrar u ocultar el índice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="M5.5 8h1.5M5.5 11h1.5M5.5 14h1.5"/></svg></button>
+<div class="navshade" id="navShade"></div>
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Cambiar modo claro u oscuro" title="Cambiar modo claro / oscuro"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+
+<h1>Heurística y Optimización — Guía completa</h1>
+<p class="sub">UTN FRT · Algoritmos Genéticos y Optimización Heurística (Dr. Adrián Will, GITIA) · Módulos 1, 2 y 3<br>Versión 1.0 · 5 de noviembre de 2026</p>
+
+<details id="historial"><summary>Historial de versiones</summary>
+<ul class="vlog">
+<li><div><span class="vtag">v1.0 <small>05/11/2026</small></span></div><div><b>Versión inicial.</b> Módulo 1 (qué es una heurística, optimización, clasificación, proyectos GITIA), Módulo 2 (Hill Climbing y Simulated Annealing) y Módulo 3 (AG simple, cinco operadores de selección, ocho operadores de cruzamiento, mutación y el ejemplo completo). Laboratorios interactivos de ruleta/SUS/torneo, cruzamientos y probabilidad de aceptación. Banco de preguntas V/F y multiple choice por tema.</div></li>
+</ul>
+</details>
+
+<div class="cta">
+<a class="p" href="practica.html"><span class="ico">🎯</span><span>Práctica por tema<small>Elegís unidades, temas y tipo de pregunta</small></span></a>
+<a class="s" href="practica.html?modo=examen"><span class="ico">⏱</span><span>Modo examen<small>Con tiempo y corrección al final</small></span></a>
+<a class="s" href="#s13"><span class="ico">📐</span><span>Fórmulas<small>Todo lo que hay que saber de memoria</small></span></a>
+</div>
+
+<section id="s0" data-tema="-">
+<h2>0. Cómo estudiar con esto</h2>
+<p>La guía sigue el orden de las clases y está separada en <b>módulos</b> (unidades), <b>secciones</b> (temas) e <b>incisos</b> (cada operador por separado). Cada tema cierra con preguntas <b>¿Lo entendiste?</b> con la respuesta escondida, y con un botón para practicar <b>solo ese tema</b> en V/F o multiple choice.</p>
+<div class="grid">
+<div class="card"><h4>Cajas azules</h4>Definiciones y la idea central del tema.</div>
+<div class="card"><h4>Cajas verdes</h4>Lo que conviene llevarse y las reglas prácticas.</div>
+<div class="card"><h4>Cajas ámbar</h4>Puntos donde una diapositiva tiene una errata o una simplificación. Conviene saber las dos versiones.</div>
+<div class="card"><h4>Laboratorios 🧪</h4>Calculadoras para probar la ruleta, el SUS, el torneo, los cruzamientos y la aceptación del recocido con tus propios números.</div>
+</div>
+<div class="box ok"><b>La idea que ordena toda la materia</b>
+Cada método se clasifica con cuatro preguntas: ¿mira <b>una</b> solución o <b>muchas</b> a la vez (secuencial / paralelo)? ¿se inspira en la <b>evolución</b>? ¿acepta solo <b>mejoras</b> (greedy) o a veces acepta <b>empeorar</b>? ¿optimiza <b>uno</b> o <b>varios</b> objetivos? Si podés contestar eso para Hill Climbing, Simulated Annealing y AG, tenés media materia ordenada (sección <a href="#s3">3</a>).</div>
+<p>Dentro de los AG, la otra gran distinción es <b>explotación vs exploración</b>: el cruzamiento explota (combina lo bueno de padres buenos) y la mutación explora (lleva a zonas no visitadas). Y en selección, todo se mide con <b>bias, spread, presión de selección y diversidad genética</b>.</p>
+<p class="sub">El progreso ("aprendido") y el tema elegido se guardan solo en tu navegador.</p>
+</section>
+
+<!-- ================= MÓDULO 1 ================= -->
+
+<section id="s1" data-tema="intro">
+<h2>1. ¿Qué es una heurística?</h2>
+<p>La palabra viene del griego <i>heuriskein</i>: <b>hallar o descubrir</b>. Como metodología científica, la heurística reúne medios auxiliares, principios, reglas, estrategias y programas que facilitan resolver problemas para los que <b>no hay un procedimiento de resolución exacta</b>.</p>
+<div class="box"><b>Definición de la cátedra</b>
+Una heurística es <b>cualquier proceso que se usa para resolver un problema y que funciona bien en la práctica, pero no ofrece garantías</b> de lograrlo. Es un algoritmo, paradigma o familia de algoritmos que se aplica <b>cuando no se puede hacer otra cosa</b>: cuando no existe una solución analítica (determinística) para el problema.</div>
+<p>Las tres preguntas de la primera clase (qué es, para qué sirve, cuándo se usa) tienen <b>la misma respuesta</b>: se usa cuando no hay otro camino.</p>
+
+<h3>1.1 Qué algoritmos califican como heurísticos</h3>
+<p>Califica como heurística <b>todo algoritmo que incluya pasos cuya eficiencia, forma de ajuste, velocidad de convergencia o comportamiento asintótico no esté demostrado</b>. Son algoritmos que funcionan bien en la práctica. Los ejemplos de clase:</p>
+<ul><li>Simplex lineal</li><li>Simplex heurístico (Nelder–Mead)</li><li>El <i>learning rate</i> en Backpropagation</li><li>Google PageRank</li></ul>
+
+<h3>1.2 Determinístico, debatible o heurístico</h3>
+<table><tr><th>Determinístico</th><th>Debatible</th><th>Heurístico</th></tr>
+<tr><td>Manejo de bases de datos<br>Comunicaciones<br>Manejo de stock<br>Hojas de cálculo, procesadores de texto</td>
+<td>Búsquedas por palabra clave (ML)<br>Reconocimiento de rostros<br>Travelling Salesman Problem (TSP)<br>Logística<br>Traducción entre idiomas<br>Google PageRank</td>
+<td>Style Transfer<br>Conducción autónoma<br>Deep Fakes<br>Análisis automático de imágenes médicas<br>Seleccionar partes importantes de un texto</td></tr></table>
+
+<h3>1.3 Determinísticos vs heurísticos</h3>
+<table><tr><th></th><th>Métodos determinísticos</th><th>Métodos heurísticos</th></tr>
+<tr><td><b>Hipótesis</b></td><td>Requieren <b>fuertes hipótesis</b> sobre la función, en general globales: continuidad, existencia de derivadas, convexidad</td><td><b>No requieren hipótesis</b>. Funcionan incluso si no hay una función (por ejemplo, una simulación)</td></tr>
+<tr><td><b>Convergencia</b></td><td><b>Garantizada</b> a un óptimo, pero en general <b>local</b>; sin hipótesis no se puede comprobar si es global</td><td>Convergen a una <b>buena solución</b> (<i>near optimal</i>, como en AG)</td></tr>
+<tr><td><b>Tiempo</b></td><td>Tiempo máximo y promedio de convergencia <b>conocidos</b></td><td>Tiempo máximo y velocidad de convergencia en general <b>no conocidos</b></td></tr>
+<tr><td><b>Repetibilidad</b></td><td>Mismos datos y mismas condiciones iniciales → <b>siempre el mismo resultado</b></td><td>Usan azar: dos corridas pueden dar resultados distintos</td></tr>
+<tr><td><b>Dónde brillan</b></td><td>Problemas con buena estructura matemática</td><td>Casos muy complejos: <b>NP-Hard</b>, gran cantidad de óptimos locales</td></tr></table>
+
+<h3>1.4 ¿Cuándo aplicar métodos heurísticos?</h3>
+<table><tr><th>Situación</th><th>Por qué una heurística</th><th>Ejemplo de clase</th></tr>
+<tr><td>No se puede aplicar otro método</td><td>Faltan hipótesis: funciones no derivables, no continuas, o que ni siquiera son funciones</td><td>Simulaciones (robótica)</td></tr>
+<tr><td>Problemas ruidosos o mal condicionados</td><td>Los métodos aleatorios son <b>robustos</b> y poco sensibles al ruido</td><td>Identificación de fase de clientes en distribución eléctrica</td></tr>
+<tr><td>Gran cantidad de óptimos locales</td><td>Los métodos basados en derivadas quedan atrapados</td><td>Convergencia de redes neuronales</td></tr>
+<tr><td>Problemas reales de gran complejidad</td><td>Alcanza con una buena solución, aunque no sea el óptimo global</td><td>Problemas discretos enormes: 2<sup>100</sup> ≈ 10<sup>30</sup>, 3<sup>200</sup> ≈ 10<sup>95</sup> soluciones</td></tr></table>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Un método heurístico garantiza encontrar el óptimo global?</summary><div>No. Funciona bien en la práctica pero no ofrece garantías. Converge a una buena solución (<i>near optimal</i>).</div></details>
+<details><summary>¿Qué ventaja tiene un método determinístico frente a uno heurístico?</summary><div>Convergencia garantizada (aunque sea a un óptimo local), tiempos de convergencia conocidos y el mismo resultado si se repite con las mismas condiciones iniciales.</div></details>
+<details><summary>¿Por qué una simulación es un caso típico para una heurística?</summary><div>Porque no es una función con fórmula: no hay derivadas ni continuidad que aprovechar, así que los métodos determinísticos no tienen hipótesis en las que apoyarse.</div></details>
+</div>
+</section>
+
+<section id="s2" data-tema="opt">
+<h2>2. El problema de optimización</h2>
+<div class="box"><b>Optimización</b>
+Es un proceso de <b>búsqueda del mejor elemento</b> de un conjunto de elementos disponibles, usando algún criterio. Todos los problemas reales, de la ciencia y de la ingeniería, terminan enfrentando esta tarea.</div>
+<p>Un problema de optimización se escribe como <b>minimizar o maximizar una función</b>:</p>
+<div class="f">min<sub>x</sub> f(x) &nbsp;&nbsp;ó&nbsp;&nbsp; max<sub>x</sub> f(x), &nbsp; x ∈ A</div>
+
+<h3>2.1 Vocabulario</h3>
+<table><tr><th>Término</th><th>Qué es</th></tr>
+<tr><td><b>Función objetivo</b> f</td><td>Asigna un número real a cada x ∈ A y así establece un <b>orden de calidad</b> entre las soluciones</td></tr>
+<tr><td><b>Espacio de búsqueda</b></td><td>El dominio A de la función objetivo</td></tr>
+<tr><td><b>Soluciones candidatas</b> o factibles</td><td>Cada x del espacio de búsqueda</td></tr>
+<tr><td><b>Dimensión del problema</b></td><td>La cantidad de variables</td></tr>
+<tr><td><b>Función de costo</b></td><td>El nombre de la función objetivo cuando se <b>minimiza</b></td></tr>
+<tr><td><b>Fitness</b></td><td>En AG, la función de evaluación (cuánto "vale" cada individuo)</td></tr></table>
+
+<h3>2.2 Óptimo local y óptimo global</h3>
+<p>El ejemplo 1 de clase: minimizar <span class="mono">f(x) = x⁴ + 5x³ + 4x² − 4x + 1</span> con la restricción −4 ≤ x ≤ 1.</p>
+<figure class="diag">{{SVG_POLI}}<figcaption>El <b>óptimo global</b> es el mejor de todo el espacio de búsqueda; un <b>óptimo local</b> es el mejor solo en su vecindad. Un método que baja "siguiendo la pendiente" desde x = 0,5 termina en el local y nunca ve el global.</figcaption></figure>
+
+<h3>2.3 Las funciones de prueba de clase</h3>
+<table><tr><th>Ejemplo</th><th>Función</th><th>Restricción</th><th>Qué muestra</th></tr>
+<tr><td>1 · Polinomio</td><td><span class="mono">x⁴+5x³+4x²−4x+1</span></td><td>−4 ≤ x ≤ 1</td><td>Un óptimo local y uno global</td></tr>
+<tr><td>2 · Parábola</td><td><span class="mono">x² + y²</span></td><td>−2 ≤ x, y ≤ 2</td><td>Un solo óptimo (en (0,0)): problema fácil</td></tr>
+<tr><td>3</td><td><span class="mono">0,2(x²+y²) + sin²(x²+y²)</span></td><td>−2 ≤ x, y ≤ 2</td><td>Anillos de óptimos locales alrededor del global</td></tr>
+<tr><td>4 · Rastrigin</td><td><span class="mono">20 + x² + y² − 10[cos(πx) + cos(πy)]</span></td><td>−5,12 ≤ x, y ≤ 5,12</td><td>Muchísimos óptimos locales en grilla; mínimo global 0 en (0,0)</td></tr></table>
+<div class="box warn"><b>Rastrigin en la bibliografía</b>
+La forma más común es <span class="mono">10n + Σ[xᵢ² − 10cos(2πxᵢ)]</span>, con 2π. La diapositiva usa cos(πx). Para el parcial, la idea es la misma: muchos óptimos locales y un único global en el origen.</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Cómo se llama la función objetivo cuando el problema es de minimización?</summary><div>Función de costo.</div></details>
+<details><summary>¿Qué es la dimensión del problema?</summary><div>La cantidad de variables de la función objetivo.</div></details>
+<details><summary>¿Por qué Rastrigin es difícil para Hill Climbing?</summary><div>Porque tiene una grilla enorme de óptimos locales: desde casi cualquier punto inicial, Hill Climbing termina en el local más cercano.</div></details>
+</div>
+</section>
+
+<section id="s3" data-tema="clasif">
+<h2>3. Clasificación de los métodos heurísticos</h2>
+<table><tr><th>Criterio</th><th>Opción A</th><th>Opción B</th></tr>
+<tr><td><b>Cuántas soluciones mira por paso</b></td><td><b>Secuenciales</b> (de trayectoria): una sola solución en cada paso</td><td><b>Paralelos</b> (poblacionales): muchas soluciones a la vez</td></tr>
+<tr><td><b>Inspiración</b></td><td><b>Evolutivos</b>: se basan en la evolución en el tiempo de un individuo o población</td><td><b>No evolutivos</b></td></tr>
+<tr><td><b>Qué acepta</b></td><td><b>Greedy</b> (<i>plus strategy</i>): solo acepta una solución si es <b>mejor</b> que la actual</td><td><b>No greedy</b>: acepta soluciones no tan buenas como la actual, con alguna probabilidad</td></tr>
+<tr><td><b>Cuántos objetivos</b></td><td><b>Mono objetivo</b>: optimiza un solo parámetro</td><td><b>Multi objetivo</b>: varios parámetros, entre los que hay que encontrar un <b>compromiso</b></td></tr></table>
+
+<h3>3.1 Los métodos más difundidos</h3>
+<div class="grid">
+<div class="card"><h4>Secuenciales (de trayectoria)</h4><ul><li>Hill Climbing</li><li>Simulated Annealing</li><li>Tabu Search</li></ul></div>
+<div class="card"><h4>Paralelos (poblacionales)</h4><ul><li>Genetic Algorithms</li><li>Ant Colony Optimization</li><li>Particle Swarm Optimization</li><li>Artificial Immune Systems</li><li>Differential Evolution</li></ul></div>
+<div class="card"><h4>Otros mencionados</h4><ul><li>k-Nearest Neighbor</li><li>Estimation of Distribution Algorithms</li><li>Gravity Search, Attraction Forces</li><li>Quantum e Imperial Algorithms</li><li>Immune Systems: Danger Theory, Limited Resources, Immune Networks</li></ul></div>
+</div>
+
+<h3>3.2 Los tres métodos de la materia, clasificados</h3>
+<table><tr><th></th><th>Secuencial / Paralelo</th><th>Greedy</th><th>Evolutivo</th><th>Metáfora</th></tr>
+<tr><td><b>Hill Climbing</b></td><td>Secuencial</td><td><b>Sí</b></td><td>No</td><td>Persona caminando (subiendo una colina)</td></tr>
+<tr><td><b>Simulated Annealing</b></td><td>Secuencial</td><td><b>No</b></td><td>No</td><td>Recocido de metales</td></tr>
+<tr><td><b>Algoritmos Genéticos</b></td><td><b>Paralelo</b> (población)</td><td>—</td><td><b>Sí</b></td><td>Evolución y selección natural (Darwin)</td></tr></table>
+
+<h3>3.3 Cómo se implementa una heurística (5 pasos)</h3>
+<ol>
+<li><b>Identificar el nombre del problema</b>: Bin Packing, Knapsack, una variante del TSP, General Assignment Problem…</li>
+<li><b>Bajar y leer papers</b> del tema.</li>
+<li><b>Elegir la heurística.</b></li>
+<li><b>Implementación básica.</b></li>
+<li><b>Incorporar las restricciones operativas.</b></li></ol>
+<div class="box ok"><b>Por qué importa el paso 1</b>
+Si sabés que tu problema "es un Knapsack" o "es un GAP", ya existe literatura que te dice qué heurísticas funcionan. Es lo que pasó con el problema de la zafra (sección <a href="#s4">4</a>).</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué quiere decir que un método sea greedy?</summary><div>Que solo acepta una nueva solución si es mejor que la actual (<i>plus strategy</i>). Hill Climbing es greedy; Simulated Annealing no.</div></details>
+<details><summary>¿Tabu Search es secuencial o poblacional?</summary><div>Secuencial (de trayectoria), como Hill Climbing y Simulated Annealing.</div></details>
+<details><summary>¿Qué caracteriza a un problema multi objetivo?</summary><div>Que hay que optimizar más de un parámetro y encontrar un compromiso entre ellos (por ejemplo, el techo solar: eficiencia de los paneles vs superficie vs volumen).</div></details>
+</div>
+</section>
+
+<section id="s4" data-tema="gitia">
+<h2>4. Aplicaciones del GITIA</h2>
+<p>El <b>GITIA</b> (Grupo de Investigación en Tecnologías Informáticas Avanzadas) es de la UTN FRT: fundado en <b>2009</b>, homologado por UTN en <b>2012</b>. Hace I+D+i en inteligencia artificial y sus aplicaciones, especializado en <b>IoT y análisis inteligente de datos</b>; es interdisciplinario, publica en revistas internacionales y tiene patentes.</p>
+<table><tr><th>Proyecto</th><th>Problema</th><th>Técnica</th></tr>
+<tr><td><b>Zafra</b>: transporte de caña de azúcar</td><td>Logística (la actividad azucarera era el 40 % del PBI provincial en 2008). ~200 parcelas por día; matching en un grafo bipartito con 15<sup>200</sup> ≈ 1,653·10<sup>235</sup> posibilidades. Se modeló como <b>Variable Profit Generalized Assignment Problem (GAP)</b></td><td>Se probaron PSO, sistemas multiagente y Niching GA. <b>Ganaron los AG</b>: resultados cerca del óptimo en 7–8 segundos</td></tr>
+<tr><td><b>SIOVA</b></td><td>Optimizar el consumo de vapor de los tachos de cocimiento de un ingenio (esquema de descargas)</td><td>Optimización con resultados en diagrama de Gantt y medición en fábrica</td></tr>
+<tr><td><b>Patente 1 · Peak Shaving</b></td><td>Sobrecarga de transformadores por los aires acondicionados en verano (Demand Side Management)</td><td>Dispositivos inteligentes controlados con <b>Sistemas Inmunológicos Artificiales</b></td></tr>
+<tr><td><b>Patente 2 · PHID</b></td><td>Identificar a qué fase está conectado cada cliente de la red eléctrica (balance de cargas, pérdidas, contingencias)</td><td><b>Algoritmos Evolutivos</b> sobre datos de consumo</td></tr>
+<tr><td>Otras con AG</td><td colspan="2">Selección de variables (consumo eléctrico, radiación solar), patrones de diseño de software, ajuste de parámetros de modelos de transformadores, topología de la red de distribución, balance de cargas en subestaciones</td></tr></table>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué método dio los mejores resultados en el problema de la zafra?</summary><div>Los Algoritmos Genéticos, con soluciones cerca del óptimo en 7 a 8 segundos.</div></details>
+<details><summary>¿Qué técnica usa la patente de Peak Shaving?</summary><div>Sistemas Inmunológicos Artificiales.</div></details>
+</div>
+</section>

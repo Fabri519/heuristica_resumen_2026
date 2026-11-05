@@ -1,0 +1,255 @@
+
+<section id="s9" data-tema="xo">
+<h2>9. Operadores de cruzamiento (crossover)</h2>
+<h3>9.1 La idea</h3>
+<ul><li>Extraer y <b>preservar parte del material genético de los padres</b> en cada hijo y, a la vez, <b>combinar</b> los genes de ambos para producir una camada (<i>offspring</i>) de mejor calidad.</li>
+<li>Se aplica <b>inmediatamente después de la selección</b>, <b>por parejas</b>, sobre la población seleccionada. Si la cantidad es impar, un individuo pasa sin cambios.</li>
+<li>Es el principal responsable de la <b>explotación</b> del espacio de búsqueda, hecha "inteligentemente": opera sobre padres elegidos por sus buenas características.</li></ul>
+<table><tr><th>Operador</th><th>Codificación</th><th>Qué hace</th><th>Inciso</th></tr>
+<tr><td>Single Point</td><td>Binaria, entera, real</td><td>1 corte, intercambia las colas</td><td><a href="#s9-1p">9.2</a></td></tr>
+<tr><td>Single Point con Shuffle</td><td>Binaria, entera, real</td><td>Permuta, corta, des-permuta: corrige el bias</td><td><a href="#s9-shuf">9.3</a></td></tr>
+<tr><td>Two-Point / Multi-Point</td><td>Binaria, entera, real</td><td>2 o más cortes, secciones alternadas</td><td><a href="#s9-mp">9.4</a></td></tr>
+<tr><td>Uniform / Scattered</td><td>Binaria, entera, real</td><td>Máscara binaria gen por gen</td><td><a href="#s9-uni">9.5</a></td></tr>
+<tr><td>Aritmético</td><td><b>Real</b></td><td>Combinación lineal con un solo r</td><td><a href="#s9-ari">9.6</a></td></tr>
+<tr><td>Cube</td><td><b>Real</b></td><td>Combinación con un rᵢ por coordenada</td><td><a href="#s9-cube">9.7</a></td></tr>
+<tr><td>Partial Map (PMX)</td><td><b>Orden</b> (permutaciones)</td><td>2 cortes; completa siguiendo al otro padre</td><td><a href="#s9-pmx">9.8</a></td></tr>
+<tr><td>Order Based</td><td><b>Orden</b> (permutaciones)</td><td>Máscara; completa siguiendo al otro padre</td><td><a href="#s9-ox">9.9</a></td></tr></table>
+<div class="leyenda"><span class="la">gen del padre 1</span><span class="lb2">gen del padre 2</span><span class="lc">gen problemático o mutado</span></div>
+
+<h3 id="s9-1p">9.2 Single Point Crossover</h3>
+<ul><li>Recombina los genes de los padres para encontrar los más interesantes. Sirve para codificación <b>binaria, entera y real</b>.</li>
+<li>Se elige <b>1 punto de corte al azar</b>. El primer hijo toma la primera sección del primer padre (del inicio al corte) y la segunda sección del otro padre (del corte al final). El segundo hijo, al revés.</li></ul>
+<div class="cromwrap">
+[[crom|P1|2.1 9.3 7.4 1.8 5.2 3.3 0.5 6.1 4.8 8.3|a a a a.cut a a a a a a]]
+[[crom|P2|4.2 1.6 2.7 6.4 5.9 3.1 9.2 7.7 0.3 8.5|b b b b.cut b b b b b b]]
+[[crom|C1|2.1 9.3 7.4 1.8 5.9 3.1 9.2 7.7 0.3 8.5|a a a a.cut b b b b b b]]
+[[crom|C2|4.2 1.6 2.7 6.4 5.2 3.3 0.5 6.1 4.8 8.3|b b b b.cut a a a a a a]]
+<figcaption>Corte después del 4.º gen (ejemplo de clase).</figcaption></div>
+<p><b>Efecto geométrico:</b> los hijos son <b>vértices del cubo</b> n-dimensional definido por los padres. Por ejemplo, en 3D: (x₁, y₁, z₁) y (x₂, y₂, z₂) → (x₁, y₁, z₂) y (x₂, y₂, z₁). Como cada coordenada viene de un padre, si los padres respetaban los límites (matriz de <i>bounds</i>), los hijos también.</p>
+<p><b>Problema (bias):</b> tiene tendencia a cortar en las <b>secciones centrales</b> más que en los bordes; los genes de las puntas tienden a viajar siempre juntos.</p>
+
+<h3 id="s9-shuf">9.3 Single Point con Shuffle</h3>
+<p>Para repartir los cortes de forma pareja entre todas las coordenadas:</p>
+<ol><li>Elegir los padres.</li><li>Determinar una <b>permutación al azar</b>.</li><li>Aplicar la <b>misma</b> permutación a ambos padres.</li><li>Aplicar el crossover elegido (acá, single point).</li><li>Aplicar la <b>permutación inversa</b> a ambos hijos.</li></ol>
+<p>Permutación de clase: <span class="mono">7 4 10 8 2 9 5 3 6 1</span> (el gen de la posición i va a la posición perm(i): el 1.º va a la 7.ª, el 2.º a la 4.ª…).</p>
+<div class="cromwrap">
+[[crom|P1'|8.3 5.2 6.1 9.3 0.5 4.8 2.1 1.8 3.3 7.4|a a a a.cut a a a a a a]]
+[[crom|P2'|8.5 5.9 7.7 1.6 9.2 0.3 4.2 6.4 3.1 2.7|b b b b.cut b b b b b b]]
+[[crom|C1'|8.3 5.2 6.1 9.3 9.2 0.3 4.2 6.4 3.1 2.7|a a a a.cut b b b b b b]]
+[[crom|C2'|8.5 5.9 7.7 1.6 0.5 4.8 2.1 1.8 3.3 7.4|b b b b.cut a a a a a a]]
+<figcaption>Padres permutados y cruzados con un corte después del 4.º gen.</figcaption></div>
+<div class="cromwrap">
+[[crom|C1|4.2 9.3 2.7 6.4 5.2 3.1 9.2 6.1 0.3 8.3|b a b b a b b a b a]]
+[[crom|C2|2.1 1.6 7.4 1.8 5.9 3.3 0.5 7.7 4.8 8.5|a b a a b a a b a b]]
+<figcaption>Hijos después de la permutación inversa: los genes de cada padre quedan <b>salteados</b>, no en bloque.</figcaption></div>
+
+<h3 id="s9-mp">9.4 Two-Point y Multi-Point Crossover</h3>
+<ul><li><b>Two-Point:</b> se toman dos puntos de corte.</li>
+<li><b>Multi-Point:</b> la cantidad de cortes se elige al azar.</li>
+<li>En todos los casos cada hijo se arma con <b>secciones alternadas</b> de uno y otro padre.</li>
+<li>El efecto de todas las variantes es similar, pero <b>Single-Point tarda mucho más</b> en lograr el mismo efecto: necesita que los cortes salgan en los lugares precisos en el momento justo, lo cual es poco probable.</li></ul>
+<div class="cromwrap">
+[[crom|C1|2.1 9.3 7.4 6.4 5.9 3.1 9.2 6.1 4.8 8.3|a a a.cut b b b b.cut a a a]]
+[[crom|C2|4.2 1.6 2.7 1.8 5.2 3.3 0.5 7.7 0.3 8.5|b b b.cut a a a a.cut b b b]]
+<figcaption>Two-Point con los mismos padres, cortes después del 3.º y del 7.º gen (ejemplo propio).</figcaption></div>
+
+<h3 id="s9-uni">9.5 Uniform o Scattered Crossover</h3>
+<ul><li>Sirve para codificación <b>binaria, entera y real</b>. También se lo conoce como <b>Discrete Recombination</b>.</li>
+<li>Se crea una <b>máscara binaria al azar</b>, una posición por gen. Cada posición del hijo se toma de un padre o del otro según la máscara; el segundo hijo se arma de forma simétrica.</li></ul>
+<div class="cromwrap">
+[[crom|P1|2.1 9.3 7.4 1.8 5.2 3.3 0.5 6.1 4.8 8.3|a]]
+[[crom|P2|4.2 1.6 2.7 6.4 5.9 3.1 9.2 7.7 0.3 8.5|b]]
+[[crom|Máscara|1 0 0 1 1 0 1 0 1 1|m]]
+[[crom|C1|2.1 1.6 2.7 1.8 5.2 3.1 0.5 7.7 4.8 8.3|a b b a a b a b a a]]
+[[crom|C2|4.2 9.3 7.4 6.4 5.9 3.3 9.2 6.1 0.3 8.5|b a a b b a b a b b]]
+<figcaption>Donde la máscara tiene 1, C1 copia de P1; donde tiene 0, copia de P2. C2 hace lo contrario.</figcaption></div>
+<div class="box warn"><b>El texto y el ejemplo de la diapositiva dicen cosas opuestas</b>
+El texto de la clase 8b dice que C1 toma de P1 los lugares marcados con <b>0</b> y de P2 los marcados con <b>1</b>. Pero en los dos ejemplos de clase (6c y 8b) C1 toma de <b>P1 donde hay 1</b>. Es solo una convención: lo importante es que cada hijo toma un padre donde la máscara dice una cosa y el otro donde dice la otra. Si te dan un ejercicio, aclará qué convención usás.</div>
+<p>Ejemplo de la clase 6c (enteros), misma convención:</p>
+<div class="cromwrap">
+[[crom|Padre I|1 5 3 2 8 9 4|a]]
+[[crom|Padre II|2 2 0 3 4 5 1|b]]
+[[crom|Máscara|1 0 0 1 0 1 1|m]]
+[[crom|Hijo I|1 2 0 2 4 9 4|a b b a b a a]]
+[[crom|Hijo II|2 5 3 3 8 5 1|b a a b a b b]]
+</div>
+
+<h3 id="s9-ari">9.6 Arith Crossover (aritmético)</h3>
+<p>Solo para codificación <b>real</b>. Se elige <b>un único</b> r ∈ (0, 1) al azar:</p>
+<div class="f">C₁ = r·(P₂ − P₁) + P₁ &nbsp;&nbsp;&nbsp;&nbsp; C₂ = r·(P₁ − P₂) + P₂</div>
+<p>Como r es el mismo para todas las coordenadas, los hijos caen <b>sobre el segmento que une a los padres</b> (C₁ a una fracción r del camino desde P₁ hacia P₂, C₂ a la misma fracción desde P₂ hacia P₁). Además C₁ + C₂ = P₁ + P₂.</p>
+<p>Ejemplo propio: P₁ = (0,6; −0,4), P₂ = (0; 0,5), r = 0,25 → C₁ = (0,45; −0,175) y C₂ = (0,15; 0,275).</p>
+
+<h3 id="s9-cube">9.7 Cube Crossover</h3>
+<p>Solo para codificación <b>real</b>. Igual que el aritmético pero con <b>un rᵢ distinto por coordenada</b>:</p>
+<div class="f">C₁ = R .* (P₂ − P₁) + P₁ &nbsp;&nbsp;&nbsp;&nbsp; C₂ = R .* (P₁ − P₂) + P₂, &nbsp;&nbsp; R = (r₁, …, rₙ), rᵢ ∈ (0, 1)<small>.* es el producto coordenada a coordenada</small></div>
+<p>Los hijos pueden caer <b>en cualquier punto del cubo</b> (hiperrectángulo) cuyos vértices opuestos son los padres. Ejemplo propio: R = (0,25; 0,8) → C₁ = (0,45; 0,32) y C₂ = (0,15; −0,22).</p>
+<figure class="diag">{{SVG_CUBO}}<figcaption>Dónde pueden caer los hijos de P₁ y P₂: <b>Single Point</b> solo en los vértices del rectángulo, <b>aritmético</b> sobre la diagonal (segmento), <b>Cube</b> en cualquier punto interior.</figcaption></figure>
+
+<h3 id="s9-pmx">9.8 Partial Map Crossover (PMX)</h3>
+<p>Para <b>codificación basada en el orden</b> (permutaciones, como el TSP: cada valor aparece exactamente una vez). Por qué hace falta un operador especial: si se cruza una permutación con Single Point, aparecen valores repetidos y faltan otros.</p>
+<div class="cromwrap">
+[[crom|Single Point|2 9 7 1 5 3 9 7 1 8|a a a a a a.cut c c c b]]
+<figcaption>Single Point sobre las permutaciones de abajo (corte después del 6.º gen): 9, 7 y 1 repetidos, faltan 10, 6 y 4. No es una solución válida.</figcaption></div>
+<ol><li>Elegir los 2 padres y <b>2 puntos de corte</b> al azar.</li>
+<li>Para el primer hijo, copiar las <b>secciones alternadas del primer padre</b> (la primera y la tercera), con los mismos valores y en la misma posición.</li>
+<li>Completar los lugares vacíos <b>siguiendo el orden del segundo padre</b>, salteando los valores ya ubicados (para no repetir).</li></ol>
+<div class="cromwrap">
+[[crom|P1|2 9 7 1 5 3 10 6 4 8|a a a.cut a a a a.cut a a a]]
+[[crom|P2|4 10 2 6 5 3 9 7 1 8|b b b.cut b b b b.cut b b b]]
+[[crom|C1 (paso 2)|2 9 7 – – – – 6 4 8|a a a.cut e e e e.cut a a a]]
+[[crom|C1|2 9 7 10 5 3 1 6 4 8|a a a.cut b b b b.cut a a a]]
+<figcaption>Faltan 1, 5, 3 y 10. Recorriendo P2 (4, 10, 2, 6, 5, 3, 9, 7, 1, 8) y salteando los que ya están, aparecen en el orden 10, 5, 3, 1.</figcaption></div>
+<div class="cromwrap">
+[[crom|C2|4 10 2 9 5 3 6 7 1 8|b b b.cut a a a a.cut b b b]]
+<figcaption>C2 de forma simétrica (ejemplo propio): secciones 1 y 3 de P2 y el resto siguiendo el orden de P1 (9, 5, 3, 6).</figcaption></div>
+<p>Así cada hijo conserva parte de un padre <b>exacta en posición y orden</b>, y del otro padre <b>el orden de aparición</b> de las variables restantes.</p>
+<div class="box warn"><b>PMX en otros libros</b>
+En la bibliografía clásica (Goldberg) el PMX completa los huecos con un <b>mapeo</b> entre los valores de la sección del medio, no siguiendo el orden del otro padre. Para el parcial usá el procedimiento de la cátedra, el de arriba.</div>
+
+<h3 id="s9-ox">9.9 Order Based Crossover</h3>
+<ul><li>Para codificación basada en el <b>orden</b> (permutaciones).</li>
+<li>Similar a PMX, pero en lugar de 2 cortes usa una <b>máscara binaria al azar</b> que indica qué coordenadas se toman de cada padre.</li>
+<li>Elimina el <b>bias</b> de cortar más en las secciones centrales que en los bordes (es a PMX lo que Uniform es a Single Point).</li></ul>
+<div class="cromwrap">
+[[crom|P1|2 9 7 1 5 3 10 6 4 8|a]]
+[[crom|P2|4 10 2 6 5 3 9 7 1 8|b]]
+[[crom|Máscara|1 0 0 1 1 0 1 0 1 1|m]]
+[[crom|C1 (paso 1)|2 – – 1 5 – 10 – 4 8|a e e a a e a e a a]]
+[[crom|C1|2 6 3 1 5 9 10 7 4 8|a b b a a b a b a a]]
+<figcaption>Donde la máscara tiene 1 se copia P1. Faltan 9, 7, 3 y 6: siguiendo el orden de P2 aparecen 6, 3, 9, 7 y se ubican en los huecos.</figcaption></div>
+<div class="cromwrap">
+[[crom|C2|4 2 7 6 5 3 9 10 1 8|b a a b b a b a b b]]
+<figcaption>C2 de forma simétrica (ejemplo propio): donde hay 1 se copia P2; los faltantes (10, 2, 3, 7) siguen el orden de P1: 2, 7, 3, 10.</figcaption></div>
+
+<div class="lab" id="labXO"><h4>🧪 Laboratorio: probá los cruzamientos</h4>
+<div class="row"><label for="xoOp">Operador</label><select id="xoOp">
+<option value="1p">Single Point</option><option value="2p">Two-Point</option><option value="shuf">Single Point con Shuffle</option><option value="uni">Uniform</option><option value="ari">Aritmético</option><option value="cube">Cube</option><option value="pmx">Partial Map (PMX)</option><option value="ox">Order Based</option></select>
+<button class="btn p" type="button" id="xoGo">Cruzar al azar</button></div>
+<div class="row"><label for="xoP1">P1</label><input type="text" id="xoP1" value="2.1 9.3 7.4 1.8 5.2 3.3 0.5 6.1 4.8 8.3"></div>
+<div class="row"><label for="xoP2">P2</label><input type="text" id="xoP2" value="4.2 1.6 2.7 6.4 5.9 3.1 9.2 7.7 0.3 8.5"></div>
+<div id="xoOut"></div></div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Qué operadores sirven solo para codificación real?</summary><div>El aritmético y el Cube, porque calculan valores intermedios entre los padres.</div></details>
+<details><summary>¿Por qué no se puede usar Single Point para el TSP?</summary><div>Porque al juntar pedazos de dos permutaciones aparecen ciudades repetidas y faltan otras. Para permutaciones se usan PMX u Order Based.</div></details>
+<details><summary>¿Qué problema corrige el Shuffle y qué problema corrige Order Based frente a PMX?</summary><div>El mismo: el bias de cortar más en las secciones centrales que en los bordes.</div></details>
+<details><summary>¿Qué diferencia hay entre aritmético y Cube?</summary><div>El aritmético usa un único r para todas las coordenadas (hijos sobre el segmento entre padres); Cube usa un rᵢ por coordenada (hijos en cualquier punto del cubo).</div></details>
+</div>
+</section>
+
+<section id="s10" data-tema="mut">
+<h2>10. Mutación</h2>
+<h3>10.1 La idea</h3>
+<ul><li>Reproduce las <b>mutaciones genéticas</b> de cada generación (errores de copia o de transferencia del ADN), una de las principales herramientas de la evolución natural.</li>
+<li>Se aplica <b>inmediatamente después del crossover</b>, a un <b>porcentaje bajo</b> de la población.</li>
+<li>Su objetivo principal es la <b>exploración</b> del espacio de búsqueda: llegar a áreas posiblemente no abordadas y cercanas a una buena solución.</li></ul>
+
+<h3>10.2 Step Mutation (Uniform Mutation)</h3>
+<p>Cambia una coordenada elegida al azar por un valor al azar dentro de los límites de esa coordenada. La distribución de probabilidad que se usa es <b>uniforme</b>.</p>
+<ol><li>Elegir <b>una coordenada al azar</b> del individuo seleccionado.</li>
+<li>Elegir una <b>dirección de cambio</b>: hacia el máximo o hacia el mínimo.</li>
+<li>Elegir un <b>valor al azar entre el valor actual y el extremo</b> seleccionado.</li></ol>
+<div class="cromwrap">
+[[crom|Individuo|1 5 3 2 8 9 4|_ _ _ _ c _ _]]
+[[crom|Mutado|1 5 3 2 4.1 9 4|_ _ _ _ c _ _]]
+<figcaption>Límites [1, 10]. Se eligió la 5.ª coordenada (8) y la dirección hacia el mínimo (1): el nuevo valor sale al azar entre 1 y 8, y salió 4,1.</figcaption></div>
+<p>En el <a href="#s11">ejemplo completo</a> se aplica a C4 = (0,60; −0,20): coordenada 1, dirección hacia arriba (límite 1,0), nuevo valor entre 0,60 y 1,0 → <b>(0,90; −0,20)</b>.</p>
+<div class="box warn"><b>Dos nombres, un procedimiento</b>
+La clase 6c lo llama <b>Step Mutation</b> y la clase 6d (ejemplo) <b>Uniform Mutation</b>. El procedimiento descripto es el mismo. Como el nuevo valor está entre el actual y un límite, el mutado <b>siempre respeta los bounds</b>.</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué la mutación se aplica a un porcentaje bajo de la población?</summary><div>Porque mutar demasiado destruye la información buena que vienen armando la selección y el cruzamiento (y es una de las causas de pérdida de diversidad genética útil); el algoritmo se volvería una búsqueda al azar.</div></details>
+<details><summary>¿Puede la Step Mutation sacar a un individuo de los límites?</summary><div>No: el nuevo valor se elige entre el valor actual y uno de los límites de esa coordenada.</div></details>
+</div>
+</section>
+
+<section id="s11" data-tema="ej">
+<h2>11. Ejemplo completo resuelto (AG simple)</h2>
+<div class="grid">
+<div class="card"><h4>Problema</h4><span class="mono">max F(x, y) = x + y</span><br>con −1 ≤ x, y ≤ 1 (óptimo en (1, 1), F = 2)</div>
+<div class="card"><h4>Parámetros</h4>Población 5 · 4 generaciones · ruleta con pesos · Uniform Crossover · Uniform Mutation · 1 mutado · sin elitismo</div>
+</div>
+<h3>11.1 Población inicial y evaluación</h3>
+<table><tr><th>Sol.</th><th>(x, y)</th><th class="c">F</th></tr>
+<tr><td>S1</td><td>(0,00; 0,50)</td><td class="c">0,50</td></tr><tr><td>S2</td><td>(−0,50; 0,25)</td><td class="c">−0,25</td></tr><tr><td>S3</td><td>(−0,30; −0,20)</td><td class="c">−0,50</td></tr><tr><td>S4</td><td>(0,60; −0,40)</td><td class="c">0,20</td></tr><tr><td>S5</td><td>(−0,30; −0,70)</td><td class="c">−1,00</td></tr></table>
+<h3>11.2 Selección por ruleta</h3>
+<table><tr><th></th><th class="c">S1</th><th class="c">S2</th><th class="c">S3</th><th class="c">S4</th><th class="c">S5</th><th>Nota</th></tr>
+<tr><td>F</td><td class="c">0,50</td><td class="c">−0,25</td><td class="c">−0,50</td><td class="c">0,20</td><td class="c">−1,00</td><td>m = −1,00</td></tr>
+<tr><td>F<sub>a</sub> = F − m + ε</td><td class="c">1,60</td><td class="c">0,85</td><td class="c">0,60</td><td class="c">1,30</td><td class="c">0,10</td><td>ε = 0,1 · T = 4,45</td></tr>
+<tr><td>P = F<sub>a</sub>/T</td><td class="c">0,36</td><td class="c">0,19</td><td class="c">0,14</td><td class="c">0,29</td><td class="c">0,02</td><td></td></tr>
+<tr><td>Corte Cᵢ</td><td class="c">0,36</td><td class="c">0,55</td><td class="c">0,69</td><td class="c">0,98</td><td class="c">1,00</td><td></td></tr></table>
+<div class="cromwrap"><div class="ruleta"><div style="width:36%;background:#1f5fbf">S1</div><div style="width:19%;background:#0e8a6a">S2</div><div style="width:14%;background:#b45309">S3</div><div style="width:29%;background:#7c3aed">S4</div><div style="width:2%;background:#64748b"></div><span class="pt" style="left:95%" data-n="1"></span><span class="pt" style="left:23%" data-n="2"></span><span class="pt" style="left:61%" data-n="3"></span><span class="pt" style="left:89%" data-n="4"></span><span class="pt" style="left:65%" data-n="5"></span></div><div class="rulaxis"><span style="left:0">0</span><span style="left:36%">0,36</span><span style="left:55%">0,55</span><span style="left:69%">0,69</span><span style="left:98%">0,98</span></div>
+<figcaption>Tiros 0,95 · 0,23 · 0,61 · 0,89 · 0,65 → <b>S4, S1, S3, S4, S3</b>. S2 y S5 no salieron.</figcaption></div>
+<h3>11.3 Cruzamiento (Uniform)</h3>
+<p>Se arman parejas al azar; con número impar, uno pasa sin modificación.</p>
+<table><tr><th>Pareja</th><th>Padres</th><th>Hijos</th></tr>
+<tr><td>1</td><td>P1 = S4 = (0,60; −0,40) · P2 = S1 = (0,00; 0,50)</td><td>C1 = (0,60; 0,50) · C2 = (0,00; −0,40)</td></tr>
+<tr><td>2</td><td>P3 = S3 = (−0,30; −0,20) · P4 = S4 = (0,60; −0,40)</td><td>C3 = (−0,30; −0,40) · C4 = (0,60; −0,20)</td></tr>
+<tr><td>—</td><td>S3 = (−0,30; −0,20)</td><td>Pasa sin cambios</td></tr></table>
+<p>En las dos parejas la máscara fue (1, 0): el primer hijo toma x del primer padre e y del segundo.</p>
+<h3>11.4 Mutación</h3>
+<p>Se elige C4 = (0,60; −0,20), coordenada 1, dirección arriba (límite 1,0) y se toma 0,9 → <b>(0,90; −0,20)</b>.</p>
+<h3>11.5 Comparación entre generaciones</h3>
+<table><tr><th>Generación</th><th>Individuos (F)</th><th class="c">Mejor F</th><th class="c">F promedio</th></tr>
+<tr><td>1.ª</td><td>0,50 · −0,25 · −0,50 · 0,20 · −1,00</td><td class="c">0,50</td><td class="c">−0,21</td></tr>
+<tr><td>2.ª</td><td>(0,60; 0,50) 1,10 · (0,00; −0,40) −0,40 · (−0,30; −0,40) −0,70 · (0,90; −0,20) 0,70 · (−0,30; −0,20) −0,50</td><td class="c"><b>1,10</b></td><td class="c"><b>0,04</b></td></tr></table>
+<p class="sub">Los valores de la 2.ª generación los calculamos a partir de las diapositivas, que muestran la comparación en un gráfico.</p>
+<p>En una sola generación mejoró tanto el mejor individuo (0,50 → 1,10) como el promedio. Se repite hasta completar las 4 generaciones.</p>
+<div class="box warn"><b>Rótulo repetido en las diapositivas</b>
+En las diapositivas de cruzamiento y mutación del ejemplo sigue diciendo "Población luego de la Selección": es un copiar y pegar. Son la población luego del cruzamiento y luego de la mutación.</div>
+
+<div class="gancho"><h4>❓ ¿Lo entendiste?</h4>
+<details><summary>¿Por qué S5 casi no tenía chances en la ruleta?</summary><div>Porque era el peor (F = −1 = m): su fitness ajustado es solo ε = 0,1 y su probabilidad 0,02.</div></details>
+<details><summary>¿Qué pasa con el 5.º individuo seleccionado en el cruzamiento?</summary><div>Como hay 5 (impar), las parejas son 2 y el 5.º (S3) pasa sin modificación.</div></details>
+</div>
+</section>
+
+<!-- ================= MÓDULO 4 ================= -->
+
+<section id="s12" data-tema="todo">
+<h2>12. Pares que se confunden</h2>
+<table><tr><th>Concepto A</th><th>Concepto B</th><th>Cómo distinguirlos</th></tr>
+<tr><td>Secuencial</td><td>Paralelo</td><td>Una solución por paso (HC, SA, Tabu) vs una población (AG, PSO, ACO)</td></tr>
+<tr><td>Greedy</td><td>No greedy</td><td>Solo acepta mejoras (HC) vs acepta empeorar con alguna probabilidad (SA)</td></tr>
+<tr><td>Óptimo local</td><td>Óptimo global</td><td>Mejor en su vecindad vs mejor en todo el espacio de búsqueda</td></tr>
+<tr><td>Explotación</td><td>Exploración</td><td>Cruzamiento: mejorar lo bueno que ya hay vs mutación: ir a zonas nuevas</td></tr>
+<tr><td>Bias</td><td>Spread</td><td>Diferencia entre probabilidad y veces elegido (ideal 0) vs rango de veces que puede salir un individuo (peor caso)</td></tr>
+<tr><td>Presión de selección</td><td>Diversidad genética</td><td>Qué tanto se favorece al mejor vs qué proporción de la población no son copias. Mucha presión → poca diversidad</td></tr>
+<tr><td>Ruleta</td><td>SUS</td><td>Un número aleatorio por tiro (bias grande, spread [0, n]) vs uno solo con n punteros equiespaciados (bias 0, spread mínimo)</td></tr>
+<tr><td>Ranking lineal</td><td>Ranking no lineal</td><td>Baja la presión (1 ≤ SP ≤ 2) vs la sube (1 ≤ SP ≤ N − 2)</td></tr>
+<tr><td>k grande en torneo</td><td>k chico en torneo</td><td>Más presión de selección vs menos presión</td></tr>
+<tr><td>Single Point</td><td>Uniform</td><td>Un corte, bloques (bias al centro) vs máscara gen por gen</td></tr>
+<tr><td>Aritmético</td><td>Cube</td><td>Un r para todo (segmento) vs un rᵢ por coordenada (cubo)</td></tr>
+<tr><td>PMX</td><td>Order Based</td><td>Dos cortes vs máscara; ambos completan siguiendo el orden del otro padre</td></tr>
+<tr><td>Crowding</td><td>Convergencia lenta</td><td>Presión excesiva, el mejor copa la población vs presión baja, el mejor no recibe suficientes copias</td></tr>
+<tr><td>SA básico</td><td>SA completo</td><td>Aceptación según t y T₀ vs según T y ΔF</td></tr></table>
+</section>
+
+<section id="s13" data-tema="-">
+<h2>13. Fórmulas y procedimientos</h2>
+<table><tr><th>Tema</th><th>Fórmula / regla</th></tr>
+<tr><td>Hill Climbing</td><td>X = X₀ + ε·R, ε = rand()·ε<sub>max</sub>; si F(X) &gt; F(X₀) → X₀ = X</td></tr>
+<tr><td>Vector unitario</td><td>R = R / ‖R‖, ‖R‖ = √(Σ rᵢ²), con rᵢ = 2·rand() − 1</td></tr>
+<tr><td>Enfriamiento</td><td>T = T₀·e<sup>−μt</sup></td></tr>
+<tr><td>Aceptación SA</td><td>ΔF = F(X₀) − F(X), P = e<sup>−ΔF/T</sup>, acepto si s &lt; P</td></tr>
+<tr><td>Ruleta: ajuste</td><td>F<sub>a</sub> = F − m + ε, m = min F</td></tr>
+<tr><td>Ruleta: pesos y cortes</td><td>P = F<sub>a</sub>/T con T = ΣF<sub>a</sub>; Cᵢ = Σ<sub>k≤i</sub> P(Sₖ); sale Sᵢ si s ∈ [Cᵢ₋₁, Cᵢ]</td></tr>
+<tr><td>Fitness normalizado</td><td>F/(1 + F) para F &gt; 0, o (F − m)/(M − m)</td></tr>
+<tr><td>SUS</td><td>p ∈ [0, 1/n]; punteros p + k/n, k = 0 … n−1; spread [⌊npᵢ⌋, ⌈npᵢ⌉]</td></tr>
+<tr><td>Ranking lineal</td><td>LR(pos) = (2 − SP) + 2(SP − 1)(pos − 1)/(N − 1), 1 ≤ SP ≤ 2</td></tr>
+<tr><td>Ranking no lineal</td><td>1 ≤ SP ≤ N − 2, 0 ≤ LR ≤ SP</td></tr>
+<tr><td>Aritmético</td><td>C₁ = r(P₂ − P₁) + P₁, C₂ = r(P₁ − P₂) + P₂</td></tr>
+<tr><td>Cube</td><td>C₁ = R.*(P₂ − P₁) + P₁, C₂ = R.*(P₁ − P₂) + P₂</td></tr>
+<tr><td>Eficiencias</td><td>Ruleta O(n log n) · Torneo O(n) · SUS O(n)</td></tr>
+<tr><td>Porcentajes del AG simple</td><td>Élite 2 % · offspring 80 % · no cruzada 20 % (mutación 10 % + selección 10 %)</td></tr></table>
+<div class="box ok"><b>Antes del parcial</b>
+Repasá a mano: una ruleta completa (4 pasos), un SUS, un Single Point, un Uniform, un PMX y un Order Based. Son los ejercicios que más se pueden pedir.</div>
+<div class="cta"><a class="p" href="practica.html"><span class="ico">🎯</span><span>Ir a practicar<small>Elegí los temas que quieras</small></span></a></div>
+</section>
+
+</main>
+</div>
+<script src="assets/labs.js"></script>
+</body>
+</html>
