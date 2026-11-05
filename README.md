@@ -1,8 +1,8 @@
 # Heurística y Optimización · Guía completa
 
-Resumen de **Algoritmos Genéticos y Optimización Heurística** (UTN FRT · GITIA; profesores Dr. Adrián Will y Diego Lizondo) armado a partir de las diapositivas de clase, con práctica de verdadero/falso y multiple choice por tema.
+Resumen de **Algoritmos Genéticos y Optimización Heurística** (UTN FRT · GITIA; profesores Dr. Adrián Will y Dr. Diego Lizondo) armado a partir de las diapositivas de clase, con práctica de verdadero/falso y multiple choice por tema.
 
-Resumen hecho por **Fabri**.
+Fabrizzio Javier, López Roldán
 
 🌐 **Sitio:** https://fabri519.github.io/heuristica_resumen_2026/
 
