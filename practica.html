@@ -52,7 +52,7 @@
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   var LS = window.LSH;
-  var SECC = { s1:'1. ¿Qué es una heurística?', s2:'2. El problema de optimización', s3:'3. Clasificación', s4:'4. Aplicaciones del GITIA', s5:'5. Hill Climbing', s6:'6. Simulated Annealing',
+  var SECC = { s1:'1. ¿Qué es una heurística?', s2:'2. El problema de optimización', s3:'3. Clasificación', s4:'4. Aplicaciones del GITIA', snap:'★ La máxima de Napoleón', s5:'5. Hill Climbing', s6:'6. Simulated Annealing',
     s7:'7. AG: generalidades', s8:'8. Selección', 's8-med':'8.2 Bias, spread, presión y diversidad', 's8-rul':'8.3 Ruleta', 's8-tor':'8.4 Torneo', 's8-sus':'8.5 SUS', 's8-rank':'8.6 Ranking',
     s9:'9. Cruzamiento', 's9-1p':'9.2 Single Point', 's9-shuf':'9.3 Shuffle', 's9-mp':'9.4 Two/Multi-Point', 's9-uni':'9.5 Uniform', 's9-ari':'9.6 Aritmético', 's9-cube':'9.7 Cube', 's9-pmx':'9.8 PMX', 's9-ox':'9.9 Order Based', s10:'10. Mutación', s11:'11. Ejemplo completo' };
   var TEMA = {}; MODULOS.forEach(function(m){ m.temas.forEach(function(t){ TEMA[t.id] = t.n; }); });

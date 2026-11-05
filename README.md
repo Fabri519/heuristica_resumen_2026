@@ -7,12 +7,12 @@ Resumen de **Algoritmos Genéticos y Optimización Heurística** (UTN FRT, Dr. A
 ## Qué tiene
 
 - **Guía (`index.html`)** separada en módulos, secciones e incisos:
-  - **Módulo 1 · Introducción:** qué es una heurística, el problema de optimización, clasificación de los métodos, aplicaciones del GITIA.
+  - **Módulo 1 · Introducción:** qué es una heurística, el problema de optimización, clasificación de los métodos, aplicaciones del GITIA y la máxima de Napoleón (inteligencia e iniciativa).
   - **Módulo 2 · Métodos secuenciales:** Hill Climbing y Simulated Annealing (y una comparación entre los dos).
   - **Módulo 3 · Algoritmos Genéticos:** generalidades y esquema, **selección** (bias/spread/presión/diversidad, ruleta, torneo, SUS, ranking), **cruzamiento** (Single Point, Shuffle, Two/Multi-Point, Uniform, Aritmético, Cube, PMX, Order Based), **mutación** y el ejemplo completo resuelto.
   - **Módulo 4 · Para el parcial:** pares que se confunden y fórmulas.
 - Cajas ámbar con las **erratas** de las diapositivas, preguntas **¿Lo entendiste?** y **laboratorios** interactivos (ruleta/SUS/torneo, cruzamientos y probabilidad de aceptación del recocido).
-- **Práctica (`practica.html`):** 216 preguntas. Se eligen los módulos y temas, el tipo (V/F, multiple choice o ambas), la cantidad y el modo (corrección al instante o examen con tiempo). Al final muestra la nota por tema, qué secciones repasar y permite reintentar solo las incorrectas.
+- **Práctica (`practica.html`):** 223 preguntas. Se eligen los módulos y temas, el tipo (V/F, multiple choice o ambas), la cantidad y el modo (corrección al instante o examen con tiempo). Al final muestra la nota por tema, qué secciones repasar y permite reintentar solo las incorrectas.
 - Modo claro/oscuro, buscador (tecla `/`), índice ocultable y avance guardado en el navegador.
 
 ## Cómo está armado

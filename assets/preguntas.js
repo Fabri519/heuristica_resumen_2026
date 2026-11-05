@@ -4,7 +4,8 @@ window.MODULOS = [
     { id: 'intro', n: '¿Qué es una heurística?' },
     { id: 'opt', n: 'El problema de optimización' },
     { id: 'clasif', n: 'Clasificación de los métodos' },
-    { id: 'gitia', n: 'Aplicaciones del GITIA' } ] },
+    { id: 'gitia', n: 'Aplicaciones del GITIA' },
+    { id: 'napo', n: 'La máxima de Napoleón' } ] },
   { id: 'm2', n: 'Módulo 2 · Métodos secuenciales', temas: [
     { id: 'hc', n: 'Hill Climbing' },
     { id: 'sa', n: 'Simulated Annealing' } ] },
@@ -79,6 +80,15 @@ window.PREGUNTAS = [
 { t:'gitia', y:'mc', q:'¿Qué técnica usa la patente PHID (identificación de fase)?', o:['Sistemas inmunológicos artificiales','Algoritmos evolutivos','Simulated Annealing','Redes neuronales'], a:1, e:'Determina la fase de cada cliente a partir de datos de consumo con algoritmos evolutivos.', s:'s4' },
 { t:'gitia', y:'mc', q:'¿Qué optimiza el sistema SIOVA?', o:['El transporte de caña','El consumo de vapor de los tachos de cocimiento','La radiación solar','La carga de transformadores'], a:1, e:'SIstema de Optimización de consumo de VApor.', s:'s4' },
 { t:'gitia', y:'mc', q:'¿Cuántas posibilidades tiene el problema de la zafra según la clase?', o:['2¹⁰⁰ ≈ 10³⁰','15²⁰⁰ ≈ 1,65·10²³⁵','3²⁰⁰ ≈ 10⁹⁵','200!'], a:1, e:'Unas 200 parcelas por día: 15²⁰⁰ ≈ 1,653e235.', s:'s4' },
+
+/* ---------------- Napoleón ---------------- */
+{ t:'napo', y:'vf', q:'Según la máxima atribuida a Napoleón, las personas se clasifican según su inteligencia y su iniciativa.', a:true, e:'Dos características que dan cuatro categorías.', s:'snap' },
+{ t:'napo', y:'vf', q:'Según la máxima, los ignorantes sin iniciativa son los más peligrosos.', a:false, e:'Los más peligrosos son los ignorantes CON iniciativa. Los ignorantes sin iniciativa iban a la primera línea de combate.', s:'snap' },
+{ t:'napo', y:'vf', q:'Los inteligentes con iniciativa eran designados como generales, estrategas y comandantes.', a:true, e:'Con poder de decisión.', s:'snap' },
+{ t:'napo', y:'vf', q:'Está históricamente verificado que Napoleón formuló esta clasificación.', a:false, e:'Se le atribuye frecuentemente, pero sin verificación histórica exacta.', s:'snap' },
+{ t:'napo', y:'mc', q:'¿Qué cargo correspondía a los inteligentes sin iniciativa?', o:['Generales con poder de decisión','Oficiales que cumplen órdenes superiores con diligencia y precisión','Primera línea de combate','Ninguno: se los alejaba del ejército'], a:1, e:'Cumplen órdenes con diligencia y precisión.', s:'snap' },
+{ t:'napo', y:'mc', q:'¿Por qué Napoleón no quería cerca del ejército a los ignorantes con iniciativa?', o:['Porque eran lentos','Porque hacen y dicen lo que no deben y arruinan lo que toca su falta de juicio','Porque no cumplían órdenes por falta de iniciativa','Porque eran demasiado inteligentes'], a:1, e:'La iniciativa sin criterio es lo peligroso.', s:'snap' },
+{ t:'napo', y:'mc', q:'¿A quiénes se ubicaba en la primera línea de combate ("carne de cañón")?', o:['Inteligentes con iniciativa','Inteligentes sin iniciativa','Ignorantes sin iniciativa','Ignorantes con iniciativa'], a:2, e:'Ignorantes sin iniciativa.', s:'snap' },
 
 /* ---------------- Hill Climbing ---------------- */
 { t:'hc', y:'vf', q:'Hill Climbing pertenece a la familia de los algoritmos de búsqueda local.', a:true, e:'Correcto.', s:'s5' },
